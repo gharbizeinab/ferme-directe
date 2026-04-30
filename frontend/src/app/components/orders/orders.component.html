@@ -1,0 +1,261 @@
+<!-- src/app/components/orders/orders.component.html -->
+
+<div class="orders-page">
+
+  <div class="page-header">
+    <div>
+      <h2>
+        <mat-icon>receipt_long</mat-icon>
+        {{ authService.isAdmin() ? 'Toutes les Commandes' : (authService.isSeller() ? 'Commandes de mes produits' : 'Mes Commandes') }}
+      </h2>
+      <p>{{ authService.isAdmin() ? 'Gérez toutes les commandes de la plateforme' : (authService.isSeller() ? 'Gérez les commandes contenant vos produits' : 'Suivez l\'état de vos commandes') }}</p>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filter-row">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Rechercher (numéro commande, statut...)</mat-label>
+      <input matInput (keyup)="applyFilter($event)">
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="status-filter" *ngIf="authService.isAdmin() || authService.isSeller()">
+      <mat-label>Statut</mat-label>
+      <mat-select [(ngModel)]="selectedStatus" (selectionChange)="filterByStatus()">
+        <mat-option value="">Tous</mat-option>
+        <mat-option value="EN_ATTENTE">En attente</mat-option>
+        <mat-option value="CONFIRME">Confirmé</mat-option>
+        <mat-option value="EN_LIVRAISON">En livraison</mat-option>
+        <mat-option value="LIVRE">Livré</mat-option>
+        <mat-option value="ANNULE">Annulé</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-container" *ngIf="isLoading">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Chargement des commandes...</p>
+  </div>
+
+  <!-- Table -->
+  <mat-card class="table-card" *ngIf="!isLoading">
+    <div class="table-wrap">
+      <table mat-table [dataSource]="dataSource" matSort class="orders-table">
+
+        <!-- N° Commande -->
+        <ng-container matColumnDef="numeroCommande">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>N° Commande</th>
+          <td mat-cell *matCellDef="let order">
+            <strong class="order-number">{{ order.numeroCommande }}</strong>
+          </td>
+        </ng-container>
+
+        <!-- Date -->
+        <ng-container matColumnDef="dateCommande">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
+          <td mat-cell *matCellDef="let order">
+            <span class="date-text">{{ order.dateCommande | date:'dd/MM/yyyy' }}</span>
+            <span class="time-text">{{ order.dateCommande | date:'HH:mm' }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Client (Admin only) -->
+        <ng-container matColumnDef="client">
+          <th mat-header-cell *matHeaderCellDef>Client</th>
+          <td mat-cell *matCellDef="let order">
+            {{ order.prenomClient }} {{ order.nomClient }}
+          </td>
+        </ng-container>
+
+        <!-- Status -->
+        <ng-container matColumnDef="statut">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Statut</th>
+          <td mat-cell *matCellDef="let order">
+            <span class="status-badge" [ngClass]="getStatusClass(order.statut)">
+              <span class="status-dot"></span>
+              {{ getStatusLabel(order.statut) }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Actions (pour vendeur et admin) -->
+        <ng-container matColumnDef="actions" *ngIf="authService.isAdmin() || authService.isSeller()">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let order">
+            <div class="action-buttons">
+              <!-- Bouton Accepter/Confirmer (si PENDING) -->
+              <button mat-icon-button 
+                      *ngIf="order.statut === 'PENDING'"
+                      (click)="updateStatus(order, 'PAID'); $event.stopPropagation()"
+                      matTooltip="Accepter la commande"
+                      color="primary">
+                <mat-icon>check_circle</mat-icon>
+              </button>
+              
+              <!-- Bouton Préparer (si PAID) -->
+              <button mat-icon-button 
+                      *ngIf="order.statut === 'PAID'"
+                      (click)="updateStatus(order, 'PROCESSING'); $event.stopPropagation()"
+                      matTooltip="Marquer comme en préparation"
+                      color="accent">
+                <mat-icon>settings</mat-icon>
+              </button>
+              
+              <!-- Bouton Expédier (si PROCESSING) -->
+              <button mat-icon-button 
+                      *ngIf="order.statut === 'PROCESSING'"
+                      (click)="updateStatus(order, 'SHIPPED'); $event.stopPropagation()"
+                      matTooltip="Marquer comme expédiée"
+                      color="accent">
+                <mat-icon>local_shipping</mat-icon>
+              </button>
+              
+              <!-- Bouton Livrer (si SHIPPED) -->
+              <button mat-icon-button 
+                      *ngIf="order.statut === 'SHIPPED'"
+                      (click)="updateStatus(order, 'DELIVERED'); $event.stopPropagation()"
+                      matTooltip="Marquer comme livrée"
+                      color="primary">
+                <mat-icon>done_all</mat-icon>
+              </button>
+              
+              <!-- Menu pour autres actions -->
+              <button mat-icon-button [matMenuTriggerFor]="statusMenu" (click)="$event.stopPropagation()">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #statusMenu="matMenu">
+                <button mat-menu-item *ngFor="let status of availableStatuses" 
+                        (click)="updateStatus(order, status.value)"
+                        [disabled]="order.statut === status.value">
+                  <mat-icon>{{ getStatusIcon(status.value) }}</mat-icon>
+                  <span>{{ status.label }}</span>
+                </button>
+              </mat-menu>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Payment status -->
+        <ng-container matColumnDef="statutPaiement">
+          <th mat-header-cell *matHeaderCellDef>Paiement</th>
+          <td mat-cell *matCellDef="let order">
+            <span class="payment-badge" [ngClass]="getPaymentClass(order.statutPaiement)">
+              {{ getPaymentLabel(order.statutPaiement) }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Total -->
+        <ng-container matColumnDef="montantTotal">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Total</th>
+          <td mat-cell *matCellDef="let order">
+            <strong class="amount">{{ order.totalTTC | number:'1.2-2' }} DT</strong>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row"></tr>
+
+        <!-- No data -->
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell no-data-cell" [attr.colspan]="displayedColumns.length">
+            <div class="empty-state">
+              <div class="empty-icon"><mat-icon>receipt_long</mat-icon></div>
+              <h3>Aucune commande</h3>
+              <p>{{ authService.isAdmin() ? 'Aucune commande enregistrée.' : (authService.isSeller() ? 'Aucune commande contenant vos produits.' : 'Vous n\'avez pas encore passé de commande.') }}</p>
+              <button mat-raised-button color="primary" routerLink="/products"
+                      *ngIf="!authService.isAdmin() && !authService.isSeller()">
+                <mat-icon>storefront</mat-icon>
+                Voir les produits
+              </button>
+            </div>
+          </td>
+        </tr>
+
+      </table>
+    </div>
+
+    <mat-paginator [pageSizeOptions]="[10, 25, 50]" showFirstLastButtons></mat-paginator>
+  </mat-card>
+
+</div>
+
+<!-- Order detail dialog -->
+<ng-template #orderDetailDialog let-order>
+  <div class="dialog-wrap">
+    <div class="dialog-header">
+      <div class="dialog-title">
+        <mat-icon>receipt_long</mat-icon>
+        <h2>Commande #{{ selectedOrder?.numeroCommande }}</h2>
+      </div>
+      <button mat-icon-button mat-dialog-close><mat-icon>close</mat-icon></button>
+    </div>
+
+    <mat-dialog-content *ngIf="selectedOrder">
+      <div class="order-detail">
+
+        <!-- Status + info -->
+        <div class="order-meta">
+          <div class="meta-item">
+            <span class="meta-label">Date</span>
+            <span>{{ selectedOrder.dateCommande | date:'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Statut</span>
+            <span class="status-badge" [ngClass]="getStatusClass(selectedOrder.statut)">
+              {{ getStatusLabel(selectedOrder.statut) }}
+            </span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Paiement</span>
+            <span class="payment-badge" [ngClass]="getPaymentClass(selectedOrder.statutPaiement)">
+              {{ getPaymentLabel(selectedOrder.statutPaiement) }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Items -->
+        <h4 class="detail-section-title">Articles commandés</h4>
+        <div class="order-items">
+          <div class="order-item-row" *ngFor="let item of selectedOrder.lignes">
+            <span class="item-name-detail">{{ item.nomProduit }}</span>
+            <span class="item-qty-detail">x{{ item.quantite }}</span>
+            <span class="item-price-detail">{{ item.sousTotal | number:'1.2-2' }} DT</span>
+          </div>
+        </div>
+
+        <!-- Totals -->
+        <div class="order-totals">
+          <div class="total-line" *ngIf="selectedOrder.remise && selectedOrder.remise > 0">
+            <span>Réduction</span>
+            <span class="text-success">-{{ selectedOrder.remise | number:'1.2-2' }} DT</span>
+          </div>
+          <div class="total-line grand-total">
+            <strong>Total</strong>
+            <strong>{{ selectedOrder.totalTTC | number:'1.2-2' }} DT</strong>
+          </div>
+        </div>
+
+        <!-- Admin: change status -->
+        <div class="status-change" *ngIf="authService.isAdmin() || authService.isSeller()">
+          <h4 class="detail-section-title">Changer le statut</h4>
+          <div class="status-buttons">
+            <button mat-stroked-button *ngFor="let s of availableStatuses"
+                    (click)="updateStatus(selectedOrder, s.value)"
+                    [class.active-status]="selectedOrder.statut === s.value"
+                    [disabled]="selectedOrder.statut === s.value">
+              {{ s.label }}
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </mat-dialog-content>
+
+    <mat-dialog-actions class="dialog-actions">
+      <button mat-button mat-dialog-close>Fermer</button>
+    </mat-dialog-actions>
+  </div>
+</ng-template>

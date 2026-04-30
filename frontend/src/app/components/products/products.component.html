@@ -1,0 +1,120 @@
+<!-- src/app/components/products/products.component.html -->
+
+<div class="products-page">
+
+  <!-- Page header -->
+  <div class="page-header-products">
+    <div class="header-text">
+      <h2>Nos Produits Frais</h2>
+      <p>Directement des fermes tunisiennes à votre table</p>
+    </div>
+  </div>
+
+  <!-- Filter bar -->
+  <div class="filters-bar">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Rechercher (tomate, huile, miel...)</mat-label>
+      <input matInput [formControl]="searchControl">
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="category-field" *ngIf="categories.length > 0">
+      <mat-label>Catégorie</mat-label>
+      <mat-select [formControl]="categoryControl">
+        <mat-option value="">Toutes les catégories</mat-option>
+        <mat-option *ngFor="let cat of categories" [value]="cat.id">
+          {{ cat.nom }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-container" *ngIf="isLoading">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Chargement des produits...</p>
+  </div>
+
+  <!-- Empty state -->
+  <div class="empty-state" *ngIf="!isLoading && products.length === 0">
+    <div class="empty-icon">
+      <mat-icon>search_off</mat-icon>
+    </div>
+    <h3>Aucun produit trouvé</h3>
+    <p>Essayez une autre recherche ou consultez toutes les catégories</p>
+    <button mat-stroked-button color="primary" (click)="clearFilters()">
+      <mat-icon>refresh</mat-icon>
+      Réinitialiser les filtres
+    </button>
+  </div>
+
+  <!-- Products grid -->
+  <div class="products-grid" *ngIf="!isLoading && products.length > 0">
+    <mat-card class="product-card" *ngFor="let product of products"
+              (click)="viewProduct(product.id)">
+
+      <!-- Image -->
+      <div class="product-image-wrap">
+        <img *ngIf="product.imageUrl" [src]="product.imageUrl" [alt]="product.nom"
+             class="product-image">
+        <div class="product-image-placeholder" *ngIf="!product.imageUrl">
+          <mat-icon>grass</mat-icon>
+        </div>
+
+        <!-- Badges -->
+        <span class="badge badge-promo" *ngIf="hasPromo(product)">Promo</span>
+        <span class="badge badge-low-stock" *ngIf="product.stock < 10 && product.stock > 0">
+          Dernières unités
+        </span>
+        <span class="badge badge-out" *ngIf="product.stock === 0">Épuisé</span>
+      </div>
+
+      <!-- Content -->
+      <div class="product-content">
+        <div class="product-category" *ngIf="product.category">{{ product.category }}</div>
+        <h3 class="product-name">{{ product.nom }}</h3>
+
+        <div class="product-seller">
+          <mat-icon>storefront</mat-icon>
+          <span>{{ product.nomVendeur }}</span>
+        </div>
+
+        <!-- Rating -->
+        <div class="product-rating" *ngIf="product.noteMoyenne > 0">
+          <mat-icon class="star">star</mat-icon>
+          <span>{{ product.noteMoyenne | number:'1.1-1' }}</span>
+          <span class="rating-count">({{ product.nombreAvis }} avis)</span>
+        </div>
+
+        <div class="product-footer">
+          <div class="product-price">
+            <span class="price-current">{{ getEffectivePrice(product) | number:'1.2-2' }} DT</span>
+            <span class="price-original" *ngIf="hasPromo(product)">
+              {{ product.prix | number:'1.2-2' }} DT
+            </span>
+          </div>
+
+          <button mat-mini-fab color="primary" class="add-to-cart-btn"
+                  (click)="addToCart( product , $event )"
+                  [disabled]="product.stock === 0"
+                  matTooltip="Ajouter au panier">
+            <mat-icon>add_shopping_cart</mat-icon>
+          </button>
+        </div>
+      </div>
+
+    </mat-card>
+  </div>
+
+  <!-- Pagination -->
+  <mat-paginator
+    *ngIf="!isLoading && totalElements > 0"
+    [length]="totalElements"
+    [pageSize]="pageSize"
+    [pageIndex]="page"
+    [pageSizeOptions]="[12, 24, 48]"
+    (page)="onPageChange($event)"
+    showFirstLastButtons>
+  </mat-paginator>
+
+</div>

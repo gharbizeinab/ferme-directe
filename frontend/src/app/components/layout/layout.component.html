@@ -1,0 +1,170 @@
+<!-- src/app/components/layout/layout.component.html -->
+
+<mat-sidenav-container class="sidenav-container">
+
+  <!-- ===== SIDENAV ===== -->
+  <mat-sidenav #sidenav [mode]="isMobile ? 'over' : 'side'"
+               [opened]="!isMobile" class="sidenav">
+
+    <!-- Logo -->
+    <div class="sidenav-logo">
+      <div class="logo-icon-wrap">
+        <mat-icon>eco</mat-icon>
+      </div>
+      <div class="logo-text-wrap">
+        <span class="logo-text">FermeDirecte</span>
+        <span class="logo-sub">Marché agricole</span>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <mat-nav-list class="sidenav-nav">
+
+      <a mat-list-item routerLink="/products" routerLinkActive="active-link"
+         *ngIf="!authService.isSeller()">
+        <mat-icon matListItemIcon>storefront</mat-icon>
+        <span matListItemTitle>Produits</span>
+      </a>
+
+      <a mat-list-item routerLink="/cart" routerLinkActive="active-link"
+         *ngIf="authService.isLoggedIn() && !authService.isSeller()">
+        <mat-icon matListItemIcon [matBadge]="cartCount > 0 ? cartCount : null"
+                  matBadgeColor="warn" matBadgeSize="small">shopping_cart</mat-icon>
+        <span matListItemTitle>Mon Panier</span>
+      </a>
+
+      <a mat-list-item routerLink="/orders" routerLinkActive="active-link"
+         *ngIf="authService.isCustomer()">
+        <mat-icon matListItemIcon>receipt_long</mat-icon>
+        <span matListItemTitle>Mes Commandes</span>
+      </a>
+
+      <div class="nav-section-label" *ngIf="authService.isSeller() || authService.isAdmin()">
+        Gestion
+      </div>
+
+      <a mat-list-item routerLink="/dashboard" routerLinkActive="active-link"
+         *ngIf="authService.isSeller() || authService.isAdmin()">
+        <mat-icon matListItemIcon>dashboard</mat-icon>
+        <span matListItemTitle>Tableau de bord</span>
+      </a>
+
+      <a mat-list-item routerLink="/orders" routerLinkActive="active-link"
+         *ngIf="authService.isSeller() || authService.isAdmin()">
+        <mat-icon matListItemIcon>receipt_long</mat-icon>
+        <span matListItemTitle>Commandes</span>
+      </a>
+
+      <a mat-list-item routerLink="/manage-products" routerLinkActive="active-link"
+         *ngIf="authService.isSeller() || authService.isAdmin()">
+        <mat-icon matListItemIcon>inventory_2</mat-icon>
+        <span matListItemTitle>Mes Produits</span>
+      </a>
+
+      <a mat-list-item routerLink="/manage-categories" routerLinkActive="active-link"
+         *ngIf="authService.isAdmin()">
+        <mat-icon matListItemIcon>category</mat-icon>
+        <span matListItemTitle>Catégories</span>
+      </a>
+
+      <a mat-list-item routerLink="/all-orders" routerLinkActive="active-link"
+         *ngIf="authService.isAdmin()">
+        <mat-icon matListItemIcon>list_alt</mat-icon>
+        <span matListItemTitle>Toutes les Commandes</span>
+      </a>
+
+    </mat-nav-list>
+
+    <div class="sidenav-spacer"></div>
+
+    <!-- User info -->
+    <div class="user-panel" *ngIf="authService.isLoggedIn()">
+      <div class="user-avatar">
+        <mat-icon>account_circle</mat-icon>
+      </div>
+      <div class="user-info">
+        <span class="user-email">{{ userEmail }}</span>
+        <span class="user-role-badge">{{ userRole }}</span>
+      </div>
+    </div>
+
+  </mat-sidenav>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <mat-sidenav-content>
+
+    <!-- Top Toolbar -->
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <button mat-icon-button (click)="sidenav.toggle()" class="menu-btn">
+          <mat-icon>menu</mat-icon>
+        </button>
+        <span class="toolbar-title">
+          <mat-icon class="title-icon">eco</mat-icon>
+          FermeDirecte
+        </span>
+      </div>
+
+      <div class="toolbar-spacer"></div>
+
+      <div class="toolbar-right">
+        <!-- Cart chip -->
+        <button mat-button class="toolbar-cart-btn" routerLink="/cart"
+                *ngIf="authService.isLoggedIn() && !authService.isSeller() && cartCount > 0">
+          <mat-icon>shopping_cart</mat-icon>
+          <span class="cart-count">{{ cartCount }}</span>
+        </button>
+
+        <!-- Auth buttons when not logged in -->
+        <ng-container *ngIf="!authService.isLoggedIn()">
+          <button mat-button routerLink="/login" class="toolbar-btn">
+            <mat-icon>login</mat-icon>
+            Se connecter
+          </button>
+          <button mat-raised-button routerLink="/register" class="toolbar-register-btn">
+            Créer un compte
+          </button>
+        </ng-container>
+
+        <!-- User menu when logged in -->
+        <button mat-icon-button *ngIf="authService.isLoggedIn()"
+                [matMenuTriggerFor]="userMenu" class="user-menu-btn">
+          <div class="user-avatar-circle">
+            <mat-icon>account_circle</mat-icon>
+          </div>
+        </button>
+        
+        <mat-menu #userMenu="matMenu" class="user-menu-panel">
+          <div class="user-menu-header">
+            <div class="user-menu-avatar">
+              <mat-icon>account_circle</mat-icon>
+            </div>
+            <div class="user-menu-info">
+              <div class="user-menu-email">{{ userEmail }}</div>
+              <div class="user-menu-role">{{ userRole }}</div>
+            </div>
+          </div>
+          
+          <mat-divider></mat-divider>
+          
+          <button mat-menu-item routerLink="/profile">
+            <mat-icon>person</mat-icon>
+            <span>Profil</span>
+          </button>
+          
+          <button mat-menu-item (click)="logout()" class="logout-menu-item">
+            <mat-icon>logout</mat-icon>
+            <span>Déconnexion</span>
+          </button>
+        </mat-menu>
+      </div>
+    </div>
+
+    <!-- Page content -->
+    <div class="main-content">
+      <router-outlet></router-outlet>
+    </div>
+
+  </mat-sidenav-content>
+
+</mat-sidenav-container>

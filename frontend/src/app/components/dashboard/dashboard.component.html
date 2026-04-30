@@ -1,0 +1,384 @@
+<!-- src/app/components/dashboard/dashboard.component.html -->
+
+<div class="dashboard-page">
+
+  <div class="page-header">
+    <div>
+      <h2>
+        <mat-icon>dashboard</mat-icon>
+        Tableau de bord
+      </h2>
+      <p>Vue d'ensemble de votre activité</p>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-container" *ngIf="isLoading">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Chargement des données...</p>
+  </div>
+
+  <!-- ===== ADMIN DASHBOARD ===== -->
+  <ng-container *ngIf="!isLoading && adminData">
+
+    <!-- Stats grid -->
+    <div class="stats-grid">
+
+      <div class="stat-card stat-blue">
+        <div class="stat-icon">
+          <mat-icon>people</mat-icon>
+        </div>
+        <div class="stat-body">
+          <div class="stat-value">{{ adminData.totalUtilisateurs }}</div>
+          <div class="stat-label">Utilisateurs</div>
+        </div>
+      </div>
+
+      <div class="stat-card stat-green">
+        <div class="stat-icon">
+          <mat-icon>receipt_long</mat-icon>
+        </div>
+        <div class="stat-body">
+          <div class="stat-value">{{ adminData.totalCommandes }}</div>
+          <div class="stat-label">Commandes</div>
+        </div>
+      </div>
+
+      <div class="stat-card stat-orange">
+        <div class="stat-icon">
+          <mat-icon>inventory_2</mat-icon>
+        </div>
+        <div class="stat-body">
+          <div class="stat-value">{{ adminData.totalProduits }}</div>
+          <div class="stat-label">Produits actifs</div>
+        </div>
+      </div>
+
+      <div class="stat-card stat-purple">
+        <div class="stat-icon">
+          <mat-icon>payments</mat-icon>
+        </div>
+        <div class="stat-body">
+          <div class="stat-value">{{ adminData.chiffreAffairesGlobal | number:'1.0-0' }} DT</div>
+          <div class="stat-label">Chiffre d'affaires</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Recent orders -->
+    <mat-card class="recent-card">
+      <div class="section-header">
+        <mat-icon>receipt_long</mat-icon>
+        <h3>Commandes récentes</h3>
+      </div>
+      <mat-card-content>
+        <div class="table-wrap">
+          <table mat-table [dataSource]="adminData.commandesRecentes" class="recent-table">
+
+            <ng-container matColumnDef="numeroCommande">
+              <th mat-header-cell *matHeaderCellDef>N° Commande</th>
+              <td mat-cell *matCellDef="let o">
+                <strong class="order-number">{{ o.numeroCommande }}</strong>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="client">
+              <th mat-header-cell *matHeaderCellDef>Client</th>
+              <td mat-cell *matCellDef="let o">{{ o.nomClient }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="montant">
+              <th mat-header-cell *matHeaderCellDef>Montant</th>
+              <td mat-cell *matCellDef="let o">
+                <strong>{{ o.totalTTC | number:'1.2-2' }} DT</strong>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="statut">
+              <th mat-header-cell *matHeaderCellDef>Statut</th>
+              <td mat-cell *matCellDef="let o">
+                <span class="status-badge" [ngClass]="getStatusClass(o.statut)">
+                  {{ getStatusLabel(o.statut) }}
+                </span>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="date">
+              <th mat-header-cell *matHeaderCellDef>Date</th>
+              <td mat-cell *matCellDef="let o">{{ o.dateCommande | date:'dd/MM/yyyy' }}</td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="adminColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: adminColumns;"></tr>
+          </table>
+        </div>
+
+        <div class="empty-state" *ngIf="adminData.commandesRecentes?.length === 0">
+          <div class="empty-icon"><mat-icon>inbox</mat-icon></div>
+          <p>Aucune commande récente</p>
+        </div>
+
+        <div class="card-footer-action">
+          <button mat-button color="primary" routerLink="/all-orders">
+            Voir toutes les commandes
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Top products -->
+    <mat-card class="recent-card" *ngIf="adminData.topProduits && adminData.topProduits.length > 0">
+      <div class="section-header">
+        <mat-icon>trending_up</mat-icon>
+        <h3>Top Produits</h3>
+      </div>
+      <mat-card-content>
+        <div class="top-products-list">
+          <div class="top-product-item" *ngFor="let p of adminData.topProduits; let i = index">
+            <div class="rank-badge" [class]="'rank-' + (i+1)">{{ i + 1 }}</div>
+            <div class="product-info">
+              <strong>{{ p.nomProduit }}</strong>
+              <span>{{ p.quantiteVendue }} ventes</span>
+            </div>
+            <div class="product-revenue">{{ p.chiffreAffaires | number:'1.2-2' }} DT</div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+  </ng-container>
+
+  <!-- ===== SELLER DASHBOARD ===== -->
+  <ng-container *ngIf="!isLoading && sellerData">
+
+    <!-- Stats grid -->
+    <div class="stats-grid">
+
+      <div class="stat-card stat-green">
+        <div class="stat-icon">
+          <mat-icon>inventory_2</mat-icon>
+        </div>
+        <div class="stat-body">
+          <div class="stat-value">{{ sellerData.totalProduits }}</div>
+          <div class="stat-label">Mes produits</div>
+        </div>
+      </div>
+
+      <div class="stat-card stat-blue">
+        <div class="stat-icon">
+          <mat-icon>receipt_long</mat-icon>
+        </div>
+        <div class="stat-body">
+          <div class="stat-value">{{ sellerData.commandesEnAttente }}</div>
+          <div class="stat-label">Commandes en attente</div>
+        </div>
+      </div>
+
+      <div class="stat-card stat-purple">
+        <div class="stat-icon">
+          <mat-icon>payments</mat-icon>
+        </div>
+        <div class="stat-body">
+          <div class="stat-value">{{ sellerData.revenuTotal | number:'1.2-2' }} DT</div>
+          <div class="stat-label">Mon chiffre d'affaires</div>
+        </div>
+      </div>
+
+      <div class="stat-card stat-orange">
+        <div class="stat-icon">
+          <mat-icon>warning_amber</mat-icon>
+        </div>
+        <div class="stat-body">
+          <div class="stat-value">{{ sellerData.produitsStockFaible }}</div>
+          <div class="stat-label">Stock faible</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Two columns: Revenue chart + Quick actions -->
+    <div class="two-columns">
+
+      <!-- Revenue chart -->
+      <mat-card class="recent-card chart-card">
+        <div class="section-header">
+          <mat-icon>show_chart</mat-icon>
+          <h3>Aperçu des revenus</h3>
+          <span class="period-label">7 derniers jours</span>
+        </div>
+        <mat-card-content>
+          <div class="revenue-chart">
+            <svg class="chart-svg" viewBox="0 0 500 200" preserveAspectRatio="none">
+              <!-- Gradient for area under curve -->
+              <defs>
+                <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" style="stop-color:#66bb6a;stop-opacity:0.3" />
+                  <stop offset="100%" style="stop-color:#66bb6a;stop-opacity:0.05" />
+                </linearGradient>
+              </defs>
+              
+              <!-- Area under curve -->
+              <path [attr.d]="getAreaPath()" fill="url(#areaGradient)" />
+              
+              <!-- Curve line -->
+              <path [attr.d]="getCurvePath()" fill="none" stroke="#43a047" stroke-width="3" />
+              
+              <!-- Points on curve -->
+              <circle *ngFor="let point of getChartPoints(); let i = index"
+                      [attr.cx]="point.x"
+                      [attr.cy]="point.y"
+                      r="4"
+                      fill="#43a047"
+                      [attr.data-value]="sellerData.revenusParJour[i].revenu">
+              </circle>
+            </svg>
+            
+            <!-- Labels -->
+            <div class="chart-labels">
+              <div class="chart-label" *ngFor="let jour of sellerData.revenusParJour">
+                <div class="label-day">{{ formatDate(jour.date) }}</div>
+                <div class="label-value">{{ jour.revenu | number:'1.0-0' }}</div>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Quick actions -->
+      <mat-card class="recent-card actions-card">
+        <div class="section-header">
+          <mat-icon>flash_on</mat-icon>
+          <h3>Actions rapides</h3>
+        </div>
+        <mat-card-content>
+          <div class="quick-actions-list">
+            <button mat-button class="action-item" routerLink="/manage-products/new">
+              <mat-icon class="action-arrow-left">chevron_right</mat-icon>
+              <div class="action-icon add">
+                <mat-icon>add</mat-icon>
+              </div>
+              <span class="action-text">Ajouter un nouveau produit</span>
+            </button>
+            <button mat-button class="action-item" routerLink="/manage-products">
+              <mat-icon class="action-arrow-left">chevron_right</mat-icon>
+              <div class="action-icon products">
+                <mat-icon>inventory_2</mat-icon>
+              </div>
+              <span class="action-text">Voir mes produits</span>
+            </button>
+            <button mat-button class="action-item" routerLink="/orders">
+              <mat-icon class="action-arrow-left">chevron_right</mat-icon>
+              <div class="action-icon orders">
+                <mat-icon>receipt_long</mat-icon>
+              </div>
+              <span class="action-text">Gérer mes commandes</span>
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+    </div>
+
+    <!-- Two columns layout -->
+    <div class="two-columns">
+
+      <!-- Recent seller orders -->
+      <mat-card class="recent-card">
+        <div class="section-header">
+          <mat-icon>receipt_long</mat-icon>
+          <h3>Commandes récentes</h3>
+        </div>
+        <mat-card-content>
+          <div class="table-wrap">
+            <table mat-table [dataSource]="sellerData.commandesRecentes" class="recent-table">
+
+              <ng-container matColumnDef="numeroCommande">
+                <th mat-header-cell *matHeaderCellDef>N° Commande</th>
+                <td mat-cell *matCellDef="let o">
+                  <strong class="order-number">{{ o.numeroCommande }}</strong>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="montant">
+                <th mat-header-cell *matHeaderCellDef>Montant</th>
+                <td mat-cell *matCellDef="let o">
+                  <strong>{{ o.totalTTC | number:'1.2-2' }} DT</strong>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="statut">
+                <th mat-header-cell *matHeaderCellDef>Statut</th>
+                <td mat-cell *matCellDef="let o">
+                  <span class="status-badge" [ngClass]="getStatusClass(o.statut)">
+                    {{ getStatusLabel(o.statut) }}
+                  </span>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="date">
+                <th mat-header-cell *matHeaderCellDef>Date</th>
+                <td mat-cell *matCellDef="let o">{{ o.dateCommande | date:'dd/MM/yyyy' }}</td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="sellerColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: sellerColumns;"></tr>
+            </table>
+          </div>
+
+          <div class="empty-state" *ngIf="sellerData.commandesRecentes?.length === 0">
+            <div class="empty-icon"><mat-icon>inbox</mat-icon></div>
+            <p>Aucune commande récente</p>
+          </div>
+
+          <div class="card-footer-action">
+            <button mat-button color="primary" routerLink="/orders">
+              Voir toutes les commandes
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Low stock products -->
+      <mat-card class="recent-card">
+        <div class="section-header">
+          <mat-icon>inventory</mat-icon>
+          <h3>Stock faible</h3>
+        </div>
+        <mat-card-content>
+          <div class="stock-list" *ngIf="sellerData.stockFaible && sellerData.stockFaible.length > 0">
+            <div class="stock-item" *ngFor="let produit of sellerData.stockFaible">
+              <div class="stock-info">
+                <strong>{{ produit.nom }}</strong>
+                <span class="stock-price">{{ produit.prix | number:'1.2-2' }} DT</span>
+              </div>
+              <div class="stock-badge" [class.critical]="produit.stock < 5">
+                <mat-icon>inventory_2</mat-icon>
+                {{ produit.stock }} unités
+              </div>
+            </div>
+          </div>
+
+          <div class="empty-state" *ngIf="!sellerData.stockFaible || sellerData.stockFaible.length === 0">
+            <div class="empty-icon success">
+              <mat-icon>check_circle</mat-icon>
+            </div>
+            <p>Tous vos produits ont un stock suffisant</p>
+          </div>
+
+          <div class="card-footer-action">
+            <button mat-button color="primary" routerLink="/manage-products">
+              Gérer mes produits
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+    </div>
+
+  </ng-container>
+
+</div>

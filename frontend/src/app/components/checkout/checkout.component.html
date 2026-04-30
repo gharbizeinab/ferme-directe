@@ -1,0 +1,304 @@
+<!-- src/app/components/checkout/checkout.component.html -->
+
+<div class="checkout-page">
+
+  <div class="page-header">
+    <h2>
+      <mat-icon>payment</mat-icon>
+      Finaliser la commande
+    </h2>
+  </div>
+
+  <!-- Stepper -->
+  <mat-stepper linear #stepper class="checkout-stepper">
+
+    <!-- ===== STEP 1: Delivery Address ===== -->
+    <mat-step [stepControl]="addressForm" label="Adresse de livraison">
+      <form [formGroup]="addressForm" class="step-form">
+
+        <div class="step-header">
+          <mat-icon>location_on</mat-icon>
+          <h3>Adresse de livraison</h3>
+        </div>
+
+        <!-- Saved addresses -->
+        <div class="saved-addresses" *ngIf="savedAddresses.length > 0">
+          <label class="section-label">Choisir une adresse enregistrée</label>
+          <div class="address-cards">
+            <div class="address-card" *ngFor="let addr of savedAddresses"
+                 [class.selected]="selectedAddress?.id === addr.id"
+                 (click)="selectSavedAddress(addr)">
+              <mat-icon class="addr-icon">home</mat-icon>
+              <div class="addr-details">
+                <strong>{{ addr.prenom }} {{ addr.nom }}</strong>
+                <span>{{ addr.rue }}, {{ addr.codePostal }} {{ addr.ville }}</span>
+                <span>{{ addr.pays }}</span>
+              </div>
+              <mat-icon class="check-icon" *ngIf="selectedAddress?.id === addr.id">
+                check_circle
+              </mat-icon>
+            </div>
+          </div>
+          <div class="divider-label">ou entrer une nouvelle adresse</div>
+        </div>
+
+        <!-- New address form -->
+        <div class="address-form-grid">
+
+          <div class="row-2">
+            <mat-form-field appearance="outline">
+              <mat-label>Prénom</mat-label>
+              <input matInput formControlName="prenom" autocomplete="given-name">
+              <mat-error *ngIf="addressForm.get('prenom')?.hasError('required')">Obligatoire</mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Nom</mat-label>
+              <input matInput formControlName="nom" autocomplete="family-name">
+              <mat-error *ngIf="addressForm.get('nom')?.hasError('required')">Obligatoire</mat-error>
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Téléphone</mat-label>
+            <input matInput formControlName="telephone" type="tel" autocomplete="tel">
+            <mat-icon matSuffix>phone</mat-icon>
+            <mat-error *ngIf="addressForm.get('telephone')?.hasError('required')">Obligatoire</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Adresse (rue et numéro)</mat-label>
+            <input matInput formControlName="rue" autocomplete="street-address">
+            <mat-icon matSuffix>signpost</mat-icon>
+            <mat-error *ngIf="addressForm.get('rue')?.hasError('required')">Obligatoire</mat-error>
+          </mat-form-field>
+
+          <div class="row-2">
+            <mat-form-field appearance="outline">
+              <mat-label>Code postal</mat-label>
+              <input matInput formControlName="codePostal" autocomplete="postal-code">
+              <mat-error *ngIf="addressForm.get('codePostal')?.hasError('required')">Obligatoire</mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Ville</mat-label>
+              <input matInput formControlName="ville" autocomplete="address-level2">
+              <mat-error *ngIf="addressForm.get('ville')?.hasError('required')">Obligatoire</mat-error>
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Pays</mat-label>
+            <mat-select formControlName="pays">
+              <mat-option value="Tunisie">Tunisie</mat-option>
+              <mat-option value="Algérie">Algérie</mat-option>
+              <mat-option value="Maroc">Maroc</mat-option>
+              <mat-option value="France">France</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Instructions de livraison (optionnel)</mat-label>
+            <textarea matInput formControlName="instructions" rows="2"
+                      placeholder="Ex: Sonner deux fois, laisser devant la porte..."></textarea>
+          </mat-form-field>
+
+          <!-- Save address checkbox -->
+          <div class="save-address-row">
+            <mat-checkbox formControlName="sauvegarder" color="primary">
+              Enregistrer cette adresse pour les prochaines commandes
+            </mat-checkbox>
+          </div>
+
+        </div>
+
+        <div class="step-actions">
+          <div></div>
+          <button mat-raised-button color="primary" matStepperNext
+                  [disabled]="addressForm.invalid && !selectedAddress">
+            Continuer
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+        </div>
+
+      </form>
+    </mat-step>
+
+    <!-- ===== STEP 2: Payment Method ===== -->
+    <mat-step [stepControl]="paymentForm" label="Paiement">
+      <form [formGroup]="paymentForm" class="step-form">
+
+        <div class="step-header">
+          <mat-icon>credit_card</mat-icon>
+          <h3>Mode de paiement</h3>
+        </div>
+
+        <div class="payment-options" formControlName="modePaiement">
+          <label class="payment-option" [class.selected]="paymentForm.get('modePaiement')?.value === 'CARTE'">
+            <input type="radio" formControlName="modePaiement" value="CARTE">
+            <div class="option-icon">
+              <mat-icon>credit_card</mat-icon>
+            </div>
+            <div class="option-info">
+              <strong>Carte bancaire</strong>
+              <span>Visa, Mastercard, CIB</span>
+            </div>
+            <mat-icon class="selected-check">check_circle</mat-icon>
+          </label>
+
+          <label class="payment-option" [class.selected]="paymentForm.get('modePaiement')?.value === 'ESPECES'">
+            <input type="radio" formControlName="modePaiement" value="ESPECES">
+            <div class="option-icon">
+              <mat-icon>payments</mat-icon>
+            </div>
+            <div class="option-info">
+              <strong>Paiement à la livraison</strong>
+              <span>Payez en espèces à la réception</span>
+            </div>
+            <mat-icon class="selected-check">check_circle</mat-icon>
+          </label>
+
+          <label class="payment-option" [class.selected]="paymentForm.get('modePaiement')?.value === 'VIREMENT'">
+            <input type="radio" formControlName="modePaiement" value="VIREMENT">
+            <div class="option-icon">
+              <mat-icon>account_balance</mat-icon>
+            </div>
+            <div class="option-info">
+              <strong>Virement bancaire</strong>
+              <span>Paiement par virement avant expédition</span>
+            </div>
+            <mat-icon class="selected-check">check_circle</mat-icon>
+          </label>
+        </div>
+
+        <div class="step-actions">
+          <button mat-button matStepperPrevious>
+            <mat-icon>arrow_back</mat-icon>
+            Retour
+          </button>
+          <button mat-raised-button color="primary" matStepperNext
+                  [disabled]="paymentForm.invalid">
+            Continuer
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+        </div>
+
+      </form>
+    </mat-step>
+
+    <!-- ===== STEP 3: Confirmation ===== -->
+    <mat-step label="Confirmation">
+      <div class="step-form">
+
+        <div class="step-header">
+          <mat-icon>fact_check</mat-icon>
+          <h3>Récapitulatif de la commande</h3>
+        </div>
+
+        <!-- Summary blocks -->
+        <div class="summary-blocks">
+
+          <!-- Address -->
+          <div class="summary-block">
+            <div class="block-label">
+              <mat-icon>location_on</mat-icon>
+              <span>Livraison</span>
+              <button mat-icon-button matStepperPrevious class="edit-btn">
+                <mat-icon>edit</mat-icon>
+              </button>
+            </div>
+            <div class="block-content" *ngIf="getDeliveryAddress()">
+              <strong>{{ getDeliveryAddress()?.prenom }} {{ getDeliveryAddress()?.nom }}</strong>
+              <span>{{ getDeliveryAddress()?.rue }}</span>
+              <span>{{ getDeliveryAddress()?.codePostal }} {{ getDeliveryAddress()?.ville }}, {{ getDeliveryAddress()?.pays }}</span>
+            </div>
+          </div>
+
+          <!-- Payment -->
+          <div class="summary-block">
+            <div class="block-label">
+              <mat-icon>payment</mat-icon>
+              <span>Paiement</span>
+            </div>
+            <div class="block-content">
+              <strong>{{ getPaymentLabel() }}</strong>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Items recap -->
+        <div class="recap-items" *ngIf="cart">
+          <h4 class="recap-title">Articles commandés</h4>
+          <div class="recap-item" *ngFor="let item of cart.lignes">
+            <span class="recap-name">{{ item.nomProduit }}</span>
+            <span class="recap-qty">x{{ item.quantite }}</span>
+            <span class="recap-price">{{ (item.prixUnitaire * item.quantite) | number:'1.2-2' }} DT</span>
+          </div>
+
+          <div class="recap-totals">
+            <div class="recap-row">
+              <span>Sous-total</span>
+              <span>{{ cart.sousTotal | number:'1.2-2' }} DT</span>
+            </div>
+            <div class="recap-row discount" *ngIf="cart.remise > 0">
+              <span>Réduction</span>
+              <span>-{{ cart.remise | number:'1.2-2' }} DT</span>
+            </div>
+            <div class="recap-row shipping">
+              <span>Livraison</span>
+              <span class="free">Gratuite</span>
+            </div>
+            <div class="recap-divider"></div>
+            <div class="recap-row total">
+              <strong>Total à payer</strong>
+              <strong class="total-amount">{{ cart.total | number:'1.2-2' }} DT</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Error -->
+        <div class="alert alert-error" *ngIf="checkoutError">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ checkoutError }}</span>
+        </div>
+
+        <div class="step-actions final-actions">
+          <button mat-button matStepperPrevious>
+            <mat-icon>arrow_back</mat-icon>
+            Retour
+          </button>
+          <button mat-raised-button color="primary" class="confirm-btn"
+                  (click)="placeOrder()" [disabled]="isPlacingOrder">
+            <mat-spinner *ngIf="isPlacingOrder" diameter="18" class="btn-spinner"></mat-spinner>
+            <mat-icon *ngIf="!isPlacingOrder">check_circle</mat-icon>
+            <span>{{ isPlacingOrder ? 'Traitement...' : 'Confirmer la commande' }}</span>
+          </button>
+        </div>
+
+      </div>
+    </mat-step>
+
+  </mat-stepper>
+
+</div>
+
+<!-- Success overlay -->
+<div class="success-overlay" *ngIf="orderPlaced">
+  <div class="success-card">
+    <div class="success-icon">
+      <mat-icon>check_circle</mat-icon>
+    </div>
+    <h2>Commande confirmée !</h2>
+    <p>Votre commande <strong>#{{ orderNumber }}</strong> a été enregistrée avec succès.</p>
+    <p class="sub-message">Vous recevrez une confirmation par email.</p>
+    <div class="success-actions">
+      <button mat-raised-button color="primary" routerLink="/orders">
+        <mat-icon>receipt_long</mat-icon>
+        Voir mes commandes
+      </button>
+      <button mat-button routerLink="/products">
+        <mat-icon>storefront</mat-icon>
+        Continuer les achats
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,132 @@
+<!-- src/app/components/register/register.component.html -->
+
+<div class="auth-page">
+  <div class="auth-split">
+
+    <!-- Left branding -->
+    <div class="auth-branding">
+      <div class="branding-content">
+        <div class="brand-logo">
+          <mat-icon>eco</mat-icon>
+        </div>
+        <h1>FermeDirecte</h1>
+        <p>Rejoignez notre communauté de producteurs et d'acheteurs engagés pour une agriculture locale et durable.</p>
+
+        <div class="brand-features">
+          <div class="feature-item">
+            <mat-icon>storefront</mat-icon>
+            <span>Vendez vos produits facilement</span>
+          </div>
+          <div class="feature-item">
+            <mat-icon>groups</mat-icon>
+            <span>Rejoignez une communauté locale</span>
+          </div>
+          <div class="feature-item">
+            <mat-icon>savings</mat-icon>
+            <span>Prix justes pour tous</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right form panel -->
+    <div class="auth-form-panel">
+      <div class="auth-form-wrap">
+
+        <div class="form-header">
+          <h2>Créer un compte</h2>
+          <p>Rejoignez la plateforme en quelques secondes</p>
+        </div>
+
+        <!-- Error/success messages -->
+        <div class="alert alert-error" *ngIf="errorMessage">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ errorMessage }}</span>
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="onRegister()" class="auth-form">
+
+          <!-- First name / Last name row -->
+          <div class="row-fields">
+            <mat-form-field appearance="outline">
+              <mat-label>Prénom</mat-label>
+              <input matInput formControlName="prenom" autocomplete="given-name">
+              <mat-error *ngIf="form.get('prenom')?.hasError('required')">Obligatoire</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Nom</mat-label>
+              <input matInput formControlName="nom" autocomplete="family-name">
+              <mat-error *ngIf="form.get('nom')?.hasError('required')">Obligatoire</mat-error>
+            </mat-form-field>
+          </div>
+
+          <!-- Email -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Adresse email</mat-label>
+            <input matInput type="email" formControlName="email" autocomplete="email">
+            <mat-icon matSuffix>mail_outline</mat-icon>
+            <mat-error *ngIf="form.get('email')?.hasError('required')">L'email est obligatoire</mat-error>
+            <mat-error *ngIf="form.get('email')?.hasError('email')">Email invalide</mat-error>
+          </mat-form-field>
+
+          <!-- Phone -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Téléphone (optionnel)</mat-label>
+            <input matInput type="tel" formControlName="telephone" autocomplete="tel">
+            <mat-icon matSuffix>phone_outline</mat-icon>
+          </mat-form-field>
+
+          <!-- Password -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Mot de passe</mat-label>
+            <input matInput [type]="hidePassword ? 'password' : 'text'"
+                   formControlName="motDePasse" autocomplete="new-password">
+            <button mat-icon-button matSuffix type="button"
+                    (click)="hidePassword = !hidePassword">
+              <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+            <mat-error *ngIf="form.get('motDePasse')?.hasError('required')">Obligatoire</mat-error>
+            <mat-error *ngIf="form.get('motDePasse')?.hasError('minlength')">Minimum 8 caractères</mat-error>
+          </mat-form-field>
+
+          <!-- Role -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Je suis</mat-label>
+            <mat-select formControlName="role">
+              <mat-option value="CUSTOMER">
+                <div class="role-option">
+                  <mat-icon>person</mat-icon>
+                  <span>Acheteur — je commande des produits frais</span>
+                </div>
+              </mat-option>
+              <mat-option value="SELLER">
+                <div class="role-option">
+                  <mat-icon>store</mat-icon>
+                  <span>Vendeur — je vends mes produits agricoles</span>
+                </div>
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="form.get('role')?.hasError('required')">Choisissez un rôle</mat-error>
+          </mat-form-field>
+
+          <!-- Submit -->
+          <button mat-raised-button color="primary" type="submit" class="submit-btn"
+                  [disabled]="form.invalid || isLoading">
+            <mat-spinner *ngIf="isLoading" diameter="18" class="btn-spinner"></mat-spinner>
+            <mat-icon *ngIf="!isLoading">person_add</mat-icon>
+            <span>{{ isLoading ? 'Inscription...' : 'Créer mon compte' }}</span>
+          </button>
+
+        </form>
+
+        <div class="form-footer">
+          <span>Déjà inscrit ?</span>
+          <a routerLink="/login">Se connecter</a>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>

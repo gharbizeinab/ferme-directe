@@ -1,0 +1,250 @@
+<!-- src/app/components/product-details/product-details.component.html -->
+
+<div class="product-detail-page" *ngIf="product">
+
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb">
+    <a routerLink="/products">
+      <mat-icon>storefront</mat-icon>
+      Produits
+    </a>
+    <mat-icon class="sep">chevron_right</mat-icon>
+    <span>{{ product.nom }}</span>
+  </nav>
+
+  <div class="product-layout">
+
+    <!-- Left: Image -->
+    <div class="product-media">
+      <div class="main-image-wrap">
+        <img *ngIf="product.imageUrl" [src]="product.imageUrl" [alt]="product.nom" class="main-image">
+        <div class="image-placeholder" *ngIf="!product.imageUrl">
+          <mat-icon>grass</mat-icon>
+        </div>
+
+        <!-- Badges -->
+        <span class="badge badge-promo" *ngIf="hasPromo()">PROMO</span>
+        <span class="badge badge-out" *ngIf="product.stock === 0">ÉPUISÉ</span>
+      </div>
+    </div>
+
+    <!-- Right: Info -->
+    <div class="product-info-panel">
+
+      <!-- Category -->
+      <div class="product-category-tag" *ngIf="product.category">
+        <mat-icon>label</mat-icon>
+        {{ product.category }}
+      </div>
+
+      <h1 class="product-title">{{ product.nom }}</h1>
+
+      <!-- Seller -->
+      <div class="product-seller">
+        <div class="seller-avatar">
+          <mat-icon>storefront</mat-icon>
+        </div>
+        <div class="seller-info">
+          <span class="seller-label">Vendu par</span>
+          <strong>{{ product.nomVendeur }}</strong>
+        </div>
+      </div>
+
+      <!-- Rating -->
+      <div class="product-rating" *ngIf="product.noteMoyenne > 0">
+        <div class="stars">
+          <mat-icon *ngFor="let s of getStars(product.noteMoyenne)"
+                    [class]="s">star</mat-icon>
+        </div>
+        <span class="rating-value">{{ product.noteMoyenne | number:'1.1-1' }}</span>
+        <span class="rating-count">({{ product.nombreAvis }} avis)</span>
+      </div>
+
+      <!-- Price block -->
+      <div class="price-block">
+        <div class="price-main">
+          <span class="price-current">{{ getDisplayPrice() | number:'1.2-2' }} DT</span>
+          <span class="price-original" *ngIf="hasPromo()">
+            {{ product.prix | number:'1.2-2' }} DT
+          </span>
+          <span class="discount-badge" *ngIf="hasPromo()">
+            -{{ getDiscountPercent() }}%
+          </span>
+        </div>
+        <span class="price-unit" *ngIf="product.unite">/ {{ product.unite }}</span>
+      </div>
+
+      <!-- Stock indicator -->
+      <div class="stock-indicator">
+        <mat-icon [class]="product.stock > 10 ? 'icon-ok' : product.stock > 0 ? 'icon-warn' : 'icon-out'">
+          {{ product.stock > 0 ? 'check_circle' : 'cancel' }}
+        </mat-icon>
+        <span [class]="product.stock > 10 ? 'text-ok' : product.stock > 0 ? 'text-warn' : 'text-out'">
+          {{ product.stock > 10 ? 'En stock' : product.stock > 0 ? 'Dernières unités (' + product.stock + ')' : 'Rupture de stock' }}
+        </span>
+      </div>
+
+        <!-- Variants -->
+      <div class="variants-section" *ngIf="product.variantes && product.variantes.length > 0">
+        <label class="variants-label">Choisir une variante</label>
+        <div class="variants-grid">
+          <button *ngFor="let v of product.variantes" class="variant-btn"
+                  [class.selected]="selectedVariant?.id === v.id"
+                  [class.out-of-stock]="v.stock === 0"
+                  (click)="selectVariant(v)" [disabled]="v.stock === 0">
+            <span class="variant-name">{{ v.nom }}</span>
+            <span class="variant-price" *ngIf="v.prix > getEffectivePrice()">
+              +{{ (v.prix - getEffectivePrice()) | number:'1.2-2' }} DT
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Quantity selector -->
+      <div class="quantity-section" *ngIf="product.stock > 0 && authService.isLoggedIn()">
+        <label class="quantity-label">Quantité</label>
+        <div class="quantity-controls">
+          <button mat-icon-button (click)="decreaseQty()" [disabled]="quantity <= 1">
+            <mat-icon>remove</mat-icon>
+          </button>
+          <input type="number" [(ngModel)]="quantity" min="1" [max]="product.stock"
+                 class="qty-input">
+          <button mat-icon-button (click)="increaseQty()" [disabled]="quantity >= product.stock">
+            <mat-icon>add</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <!-- Add to cart -->
+      <div class="action-row">
+        <button mat-raised-button color="primary" class="add-to-cart-btn"
+                (click)="addToCart()"
+                [disabled]="product.stock === 0 || !authService.isLoggedIn() || isAddingToCart">
+          <mat-spinner *ngIf="isAddingToCart" diameter="18" class="btn-spinner"></mat-spinner>
+          <mat-icon *ngIf="!isAddingToCart">add_shopping_cart</mat-icon>
+          <span *ngIf="!authService.isLoggedIn()">Connectez-vous pour commander</span>
+          <span *ngIf="authService.isLoggedIn() && !isAddingToCart">
+            {{ product.stock === 0 ? 'Épuisé' : 'Ajouter au panier' }}
+          </span>
+          <span *ngIf="isAddingToCart">Ajout en cours...</span>
+        </button>
+
+        <a mat-stroked-button routerLink="/products" class="back-btn">
+          <mat-icon>arrow_back</mat-icon>
+        </a>
+      </div>
+
+      <!-- Login CTA -->
+      <div class="login-cta" *ngIf="!authService.isLoggedIn()">
+        <mat-icon>info_outline</mat-icon>
+        <span>
+          <a routerLink="/login">Connectez-vous</a> ou
+          <a routerLink="/register">créez un compte</a> pour passer commande.
+        </span>
+      </div>
+
+      <!-- Description -->
+      <div class="product-description" *ngIf="product.description">
+        <h3>Description</h3>
+        <p>{{ product.description }}</p>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Reviews section -->
+  <div class="reviews-section">
+
+    <div class="reviews-header">
+      <h3>
+        <mat-icon>rate_review</mat-icon>
+        Avis clients
+        <span class="review-count" *ngIf="reviews.length > 0">({{ reviews.length }})</span>
+      </h3>
+
+      <!-- Write review (customers only) -->
+      <button mat-stroked-button color="primary" (click)="openReviewForm()"
+              *ngIf="authService.isCustomer() && !hasReviewed">
+        <mat-icon>edit</mat-icon>
+        Laisser un avis
+      </button>
+    </div>
+
+    <!-- Review form -->
+    <mat-card class="review-form-card" *ngIf="showReviewForm">
+      <div class="section-header">
+        <mat-icon>star</mat-icon>
+        <h3>Votre avis</h3>
+      </div>
+      <div class="review-form-content">
+        <div class="star-rating-input">
+          <button *ngFor="let i of [1,2,3,4,5]" class="star-btn"
+                  (click)="setRating(i)" (mouseover)="hoverRating = i" (mouseleave)="hoverRating = 0">
+            <mat-icon [class.filled]="i <= (hoverRating || reviewRating)">star</mat-icon>
+          </button>
+        </div>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Votre commentaire</mat-label>
+          <textarea matInput [(ngModel)]="reviewComment" rows="3"
+                    placeholder="Partagez votre expérience avec ce produit..."></textarea>
+        </mat-form-field>
+        <div class="review-form-actions">
+          <button mat-button (click)="showReviewForm = false">Annuler</button>
+          <button mat-raised-button color="primary" (click)="submitReview()"
+                  [disabled]="reviewRating === 0 || !reviewComment.trim()">
+            <mat-icon>send</mat-icon>
+            Publier l'avis
+          </button>
+        </div>
+      </div>
+    </mat-card>
+
+    <!-- Reviews list -->
+    <div class="reviews-list" *ngIf="reviews.length > 0">
+      <mat-card class="review-card" *ngFor="let review of reviews">
+        <div class="review-header">
+          <div class="reviewer-info">
+            <div class="reviewer-avatar">
+              {{ review.nomAuteur.charAt(0) }}
+            </div>
+            <div>
+              <strong>{{ review.nomAuteur }}</strong>
+              <span class="review-date">{{ review.dateCreation | date:'dd/MM/yyyy' }}</span>
+            </div>
+          </div>
+          <div class="review-stars">
+            <mat-icon *ngFor="let i of [1,2,3,4,5]"
+                      [class.filled]="i <= review.note">star</mat-icon>
+          </div>
+        </div>
+        <p class="review-comment">{{ review.commentaire }}</p>
+      </mat-card>
+    </div>
+
+    <!-- No reviews -->
+    <div class="no-reviews" *ngIf="reviews.length === 0">
+      <mat-icon>rate_review</mat-icon>
+      <p>Aucun avis pour ce produit. Soyez le premier à donner votre avis !</p>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Loading state -->
+<div class="loading-container" *ngIf="isLoading">
+  <mat-spinner diameter="48"></mat-spinner>
+  <p>Chargement du produit...</p>
+</div>
+
+<!-- Not found -->
+<div class="empty-state" *ngIf="!isLoading && !product">
+  <div class="empty-icon"><mat-icon>search_off</mat-icon></div>
+  <h3>Produit introuvable</h3>
+  <p>Ce produit n'existe pas ou a été supprimé.</p>
+  <button mat-raised-button color="primary" routerLink="/products">
+    <mat-icon>arrow_back</mat-icon>
+    Retour aux produits
+  </button>
+</div>

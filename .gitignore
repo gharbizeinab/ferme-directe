@@ -1,0 +1,84 @@
+# ============================================
+# GITIGNORE FULLSTACK - Ferme Directe
+# ============================================
+
+# ============================================
+# FRONTEND (Angular)
+# ============================================
+
+# Dependencies
+frontend/node_modules/
+frontend/package-lock.json
+
+# Build outputs
+frontend/dist/
+frontend/.angular/
+frontend/.angular/cache/
+
+# IDE
+frontend/.vscode/
+frontend/.idea/
+
+# Environment files
+frontend/.env
+frontend/.env.local
+frontend/.env.*.local
+
+# Logs
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+# OS
+frontend/.DS_Store
+frontend/Thumbs.db
+
+# ============================================
+# BACKEND (Spring Boot / Java)
+# ============================================
+
+# Maven
+backend/target/
+backend/.mvn/
+backend/mvnw
+backend/mvnw.cmd
+
+# IDE
+backend/.idea/
+backend/.vscode/
+backend/*.iml
+backend/*.ipr
+backend/*.iws
+
+# Logs
+backend/logs/
+backend/*.log
+
+# Environment files
+backend/.env
+backend/application-local.properties
+backend/application-dev.properties
+
+# OS
+backend/.DS_Store
+backend/Thumbs.db
+
+# ============================================
+# GLOBAL
+# ============================================
+
+# Archives
+*.zip
+*.tar.gz
+*.rar
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db

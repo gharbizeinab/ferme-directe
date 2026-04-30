@@ -1,0 +1,164 @@
+<!-- src/app/components/cart/cart.component.html -->
+
+<div class="cart-page">
+
+  <div class="page-header">
+    <h2>
+      <mat-icon>shopping_cart</mat-icon>
+      Mon Panier
+    </h2>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-container" *ngIf="isLoading">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Chargement du panier...</p>
+  </div>
+
+  <!-- Empty cart -->
+  <div class="empty-state" *ngIf="!isLoading && isCartEmpty()">
+    <div class="empty-icon">
+      <mat-icon>shopping_cart</mat-icon>
+    </div>
+    <h3>Votre panier est vide</h3>
+    <p>Découvrez nos produits frais et locaux</p>
+    <button mat-raised-button color="primary" (click)="continueShopping()">
+      <mat-icon>storefront</mat-icon>
+      Voir les produits
+    </button>
+  </div>
+
+  <!-- Cart content -->
+  <div class="cart-layout" *ngIf="!isLoading && !isCartEmpty() && cart">
+
+    <!-- Cart items -->
+    <div class="cart-items-section">
+
+      <mat-card class="items-card">
+        <div class="section-header">
+          <mat-icon>list</mat-icon>
+          <h3>Articles ({{ cart.lignes.length }})</h3>
+          <button mat-button color="warn" (click)="clearCart()" class="clear-btn">
+            <mat-icon>delete_sweep</mat-icon>
+            Vider le panier
+          </button>
+        </div>
+
+        <div class="cart-items-list">
+          <div class="cart-item" *ngFor="let item of cart.lignes; trackBy: trackByItem">
+
+            <!-- Product info -->
+            <div class="item-info">
+              <div class="item-image" *ngIf="item.imageUrl">
+                <img [src]="item.imageUrl" [alt]="item.nomProduit">
+              </div>
+              <div class="item-image placeholder" *ngIf="!item.imageUrl">
+                <mat-icon>grass</mat-icon>
+              </div>
+              <div class="item-details">
+                <strong class="item-name">{{ item.nomProduit }}</strong>
+                <span class="item-variant" *ngIf="item.infoVariante">
+                  {{ item.infoVariante }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Quantity controls -->
+            <div class="item-quantity">
+              <button mat-icon-button (click)="decreaseQty(item)"
+                      [disabled]="item.quantite <= 1">
+                <mat-icon>remove</mat-icon>
+              </button>
+              <span class="qty-value">{{ item.quantite }}</span>
+              <button mat-icon-button (click)="increaseQty(item)">
+                <mat-icon>add</mat-icon>
+              </button>
+            </div>
+
+            <!-- Price -->
+            <div class="item-price">
+              <strong>{{ (item.prixUnitaire * item.quantite) | number:'1.2-2' }} DT</strong>
+              <span class="unit-price">{{ item.prixUnitaire | number:'1.2-2' }} DT / unité</span>
+            </div>
+
+            <!-- Remove -->
+            <button mat-icon-button color="warn" (click)="removeItem(item)"
+                    class="remove-btn" matTooltip="Supprimer">
+              <mat-icon>close</mat-icon>
+            </button>
+
+          </div>
+        </div>
+      </mat-card>
+
+      <!-- Coupon -->
+      <mat-card class="coupon-card">
+        <div class="section-header">
+          <mat-icon>local_offer</mat-icon>
+          <h3>Code promo</h3>
+        </div>
+        <div class="coupon-form">
+          <mat-form-field appearance="outline" class="coupon-input">
+            <mat-label>Entrez votre code</mat-label>
+            <input matInput [(ngModel)]="couponCode" placeholder="Ex: BIENVENUE10"
+                   [disabled]="couponApplied">
+            <mat-icon matSuffix *ngIf="couponApplied" class="coupon-ok">check_circle</mat-icon>
+          </mat-form-field>
+          <button mat-raised-button color="primary" (click)="applyCoupon()"
+                  [disabled]="!couponCode || couponApplied || isApplyingCoupon">
+            {{ couponApplied ? 'Appliqué' : 'Appliquer' }}
+          </button>
+        </div>
+        <div class="coupon-success" *ngIf="couponApplied">
+          <mat-icon>savings</mat-icon>
+          <span>Code promo appliqué — {{ cart.remise | number:'1.2-2' }} DT de réduction</span>
+        </div>
+      </mat-card>
+
+    </div>
+
+    <!-- Order summary -->
+    <div class="cart-summary-section">
+      <mat-card class="summary-card">
+        <div class="section-header">
+          <mat-icon>receipt</mat-icon>
+          <h3>Récapitulatif</h3>
+        </div>
+
+        <div class="summary-content">
+          <div class="summary-row">
+            <span>Sous-total</span>
+            <span>{{ cart.sousTotal | number:'1.2-2' }} DT</span>
+          </div>
+          <div class="summary-row" *ngIf="cart.remise > 0">
+            <span class="discount-label">Réduction</span>
+            <span class="discount-value">-{{ cart.remise | number:'1.2-2' }} DT</span>
+          </div>
+          <div class="summary-row shipping-row">
+            <span>Livraison</span>
+            <span class="free-shipping">Gratuite</span>
+          </div>
+          <div class="summary-divider"></div>
+          <div class="summary-row total-row">
+            <strong>Total</strong>
+            <strong class="total-value">{{ cart.total | number:'1.2-2' }} DT</strong>
+          </div>
+        </div>
+
+        <button mat-raised-button color="primary" class="checkout-btn"
+                (click)="goToCheckout()">
+          <mat-icon>payment</mat-icon>
+          Passer la commande
+        </button>
+
+        <button mat-button class="continue-btn" (click)="continueShopping()">
+          <mat-icon>arrow_back</mat-icon>
+          Continuer les achats
+        </button>
+
+      </mat-card>
+    </div>
+
+  </div>
+
+</div>
