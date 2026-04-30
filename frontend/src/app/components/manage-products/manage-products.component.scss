@@ -55,6 +55,22 @@
   min-width: 220px;
 }
 
+/* Vendor cell */
+.vendor-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: var(--color-primary);
+  }
+}
+
 .product-thumb {
   width: 44px;
   height: 44px;

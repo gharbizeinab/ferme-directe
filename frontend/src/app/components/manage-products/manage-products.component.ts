@@ -1,11 +1,13 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { ProductService } from '../../services/product.service';
 import { CategoryService } from '../../services/category.service';
+import { AuthService } from '../../services/auth.service';
 import { Product, Category } from '../../models';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 
@@ -20,8 +22,9 @@ export class ManageProductsComponent implements OnInit {
 
   // Propriétés de la table
   dataSource: MatTableDataSource<Product> = new MatTableDataSource<Product>();
-  displayedColumns: string[] = ['nom', 'prix', 'stock', 'actif', 'actions'];
+  displayedColumns: string[] = ['nom', 'vendeur', 'prix', 'stock', 'actif', 'actions'];
   isLoading: boolean = true;
+  isAdmin: boolean = false;
 
   // Propriétés des catégories
   categories: Category[] = [];
@@ -39,15 +42,30 @@ export class ManageProductsComponent implements OnInit {
   constructor(
     private productService: ProductService,
     private categoryService: CategoryService,
+    private authService: AuthService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private route: ActivatedRoute
   ) {}
 
   // Initialisation du composant
   ngOnInit(): void {
+    this.isAdmin = this.authService.isAdmin();
+    // Ajuster les colonnes selon le rôle
+    if (!this.isAdmin) {
+      this.displayedColumns = ['nom', 'prix', 'stock', 'actif', 'actions'];
+    }
     this.initializeForm();
     this.loadProducts();
     this.loadCategories();
+    
+    // Vérifier si on doit ouvrir le formulaire d'ajout
+    this.route.url.subscribe(segments => {
+      if (segments.some(segment => segment.path === 'new')) {
+        // Ouvrir le formulaire après un court délai pour laisser le temps au composant de se charger
+        setTimeout(() => this.openCreateDialog(), 100);
+      }
+    });
   }
 
   // Initialisation du formulaire
@@ -68,17 +86,34 @@ export class ManageProductsComponent implements OnInit {
   // Chargement des produits
   private loadProducts(): void {
     this.isLoading = true;
-    this.productService.getMyProducts().subscribe({
-      next: (products) => {
-        this.dataSource.data = products;
-        this.dataSource.sort = this.sort;
-        this.isLoading = false;
-      },
-      error: () => {
-        this.isLoading = false;
-        this.snackBar.open('Erreur lors du chargement des produits', 'Fermer', { duration: 2500 });
-      }
-    });
+    
+    if (this.isAdmin) {
+      // Pour admin : récupérer TOUS les produits (actifs ET inactifs)
+      this.productService.getAllProducts({ page: 0, size: 1000 }).subscribe({
+        next: (page) => {
+          this.dataSource.data = page.content;
+          this.dataSource.sort = this.sort;
+          this.isLoading = false;
+        },
+        error: () => {
+          this.isLoading = false;
+          this.snackBar.open('Erreur lors du chargement des produits', 'Fermer', { duration: 2500 });
+        }
+      });
+    } else {
+      // Pour vendeur : seulement ses produits
+      this.productService.getMyProducts().subscribe({
+        next: (products) => {
+          this.dataSource.data = products;
+          this.dataSource.sort = this.sort;
+          this.isLoading = false;
+        },
+        error: () => {
+          this.isLoading = false;
+          this.snackBar.open('Erreur lors du chargement des produits', 'Fermer', { duration: 2500 });
+        }
+      });
+    }
   }
 
   // Chargement des catégories

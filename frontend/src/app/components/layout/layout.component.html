@@ -9,56 +9,53 @@
     <!-- Logo -->
     <div class="sidenav-logo">
       <div class="logo-icon-wrap">
-        <mat-icon>eco</mat-icon>
+        <mat-icon>agriculture</mat-icon>
       </div>
       <div class="logo-text-wrap">
         <span class="logo-text">FermeDirecte</span>
-        <span class="logo-sub">Marché agricole</span>
+        <span class="logo-sub">MARCHÉ AGRICOLE</span>
       </div>
     </div>
 
     <!-- Navigation -->
     <mat-nav-list class="sidenav-nav">
 
-      <a mat-list-item routerLink="/products" routerLinkActive="active-link"
-         *ngIf="!authService.isSeller()">
-        <mat-icon matListItemIcon>storefront</mat-icon>
-        <span matListItemTitle>Produits</span>
-      </a>
+      <!-- APERÇU Section (Admin & Seller only) -->
+      <ng-container *ngIf="authService.isSeller() || authService.isAdmin()">
+        <div class="nav-section-label">APERÇU</div>
 
-      <a mat-list-item routerLink="/cart" routerLinkActive="active-link"
-         *ngIf="authService.isLoggedIn() && !authService.isSeller()">
-        <mat-icon matListItemIcon [matBadge]="cartCount > 0 ? cartCount : null"
-                  matBadgeColor="warn" matBadgeSize="small">shopping_cart</mat-icon>
-        <span matListItemTitle>Mon Panier</span>
-      </a>
+        <a mat-list-item routerLink="/dashboard" routerLinkActive="active-link">
+          <mat-icon matListItemIcon>dashboard</mat-icon>
+          <span matListItemTitle>Tableau de bord</span>
+        </a>
 
-      <a mat-list-item routerLink="/orders" routerLinkActive="active-link"
-         *ngIf="authService.isCustomer()">
-        <mat-icon matListItemIcon>receipt_long</mat-icon>
-        <span matListItemTitle>Mes Commandes</span>
-      </a>
+        <a mat-list-item routerLink="/users" routerLinkActive="active-link"
+           *ngIf="authService.isAdmin()">
+          <mat-icon matListItemIcon>people</mat-icon>
+          <span matListItemTitle>Utilisateurs</span>
+        </a>
+      </ng-container>
 
-      <div class="nav-section-label" *ngIf="authService.isSeller() || authService.isAdmin()">
-        Gestion
-      </div>
-
-      <a mat-list-item routerLink="/dashboard" routerLinkActive="active-link"
-         *ngIf="authService.isSeller() || authService.isAdmin()">
-        <mat-icon matListItemIcon>dashboard</mat-icon>
-        <span matListItemTitle>Tableau de bord</span>
-      </a>
-
-      <a mat-list-item routerLink="/orders" routerLinkActive="active-link"
-         *ngIf="authService.isSeller() || authService.isAdmin()">
-        <mat-icon matListItemIcon>receipt_long</mat-icon>
-        <span matListItemTitle>Commandes</span>
-      </a>
+      <!-- CATALOGUE Section -->
+      <div class="nav-section-label">CATALOGUE</div>
 
       <a mat-list-item routerLink="/manage-products" routerLinkActive="active-link"
          *ngIf="authService.isSeller() || authService.isAdmin()">
         <mat-icon matListItemIcon>inventory_2</mat-icon>
-        <span matListItemTitle>Mes Produits</span>
+        <span matListItemTitle>Produits</span>
+      </a>
+
+      <a mat-list-item routerLink="/products" routerLinkActive="active-link"
+         *ngIf="authService.isCustomer()">
+        <mat-icon matListItemIcon>shopping_bag</mat-icon>
+        <span matListItemTitle>Produits</span>
+      </a>
+
+      <a mat-list-item routerLink="/cart" routerLinkActive="active-link"
+         *ngIf="authService.isCustomer()">
+        <mat-icon matListItemIcon>shopping_cart</mat-icon>
+        <span matListItemTitle>Mon Panier</span>
+        <span class="cart-badge" *ngIf="cartCount > 0">{{ cartCount }}</span>
       </a>
 
       <a mat-list-item routerLink="/manage-categories" routerLinkActive="active-link"
@@ -67,10 +64,13 @@
         <span matListItemTitle>Catégories</span>
       </a>
 
-      <a mat-list-item routerLink="/all-orders" routerLinkActive="active-link"
-         *ngIf="authService.isAdmin()">
-        <mat-icon matListItemIcon>list_alt</mat-icon>
-        <span matListItemTitle>Toutes les Commandes</span>
+      <!-- TRANSACTIONS Section -->
+      <div class="nav-section-label">TRANSACTIONS</div>
+
+      <a mat-list-item routerLink="/orders" routerLinkActive="active-link"
+         *ngIf="authService.isLoggedIn()">
+        <mat-icon matListItemIcon>receipt_long</mat-icon>
+        <span matListItemTitle>Commandes</span>
       </a>
 
     </mat-nav-list>
@@ -80,7 +80,7 @@
     <!-- User info -->
     <div class="user-panel" *ngIf="authService.isLoggedIn()">
       <div class="user-avatar">
-        <mat-icon>account_circle</mat-icon>
+        <span class="avatar-letter">{{ userEmail.charAt(0).toUpperCase() }}</span>
       </div>
       <div class="user-info">
         <span class="user-email">{{ userEmail }}</span>
@@ -100,7 +100,7 @@
           <mat-icon>menu</mat-icon>
         </button>
         <span class="toolbar-title">
-          <mat-icon class="title-icon">eco</mat-icon>
+          <mat-icon class="title-icon">agriculture</mat-icon>
           FermeDirecte
         </span>
       </div>

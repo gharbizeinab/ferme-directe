@@ -27,12 +27,32 @@ public class DashboardService {
     public AdminDashboardResponse getAdminDashboard() {
 
         List<Order> commandes = orderRepository.findAll();
+        
+        // Date du début du mois actuel et du mois précédent
+        java.time.LocalDate debutMoisActuel = java.time.LocalDate.now().withDayOfMonth(1);
+        java.time.LocalDate debutMoisPrecedent = debutMoisActuel.minusMonths(1);
 
+        // Chiffre d'affaires global (hors commandes annulées)
         BigDecimal ca = commandes.stream()
                 .filter(o -> o.getStatut() != OrderStatus.CANCELLED)
                 .map(Order::getTotalTTC)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
+        // Calcul des croissances
+        long commandesMoisActuel = commandes.stream()
+                .filter(o -> o.getDateCommande() != null && 
+                        !o.getDateCommande().toLocalDate().isBefore(debutMoisActuel))
+                .count();
+        
+        long commandesMoisPrecedent = commandes.stream()
+                .filter(o -> o.getDateCommande() != null &&
+                        !o.getDateCommande().toLocalDate().isBefore(debutMoisPrecedent) &&
+                        o.getDateCommande().toLocalDate().isBefore(debutMoisActuel))
+                .count();
+        
+        double croissanceCommandes = calculerCroissance(commandesMoisPrecedent, commandesMoisActuel);
+
+        // Commandes récentes avec informations client
         List<Map<String, Object>> commandesRecentes = commandes.stream()
                 .sorted(Comparator.comparing(
                         Order::getDateCommande,
@@ -43,8 +63,62 @@ public class DashboardService {
                     Map<String, Object> m = new HashMap<>();
                     m.put("id", o.getId());
                     m.put("numeroCommande", o.getNumeroCommande());
+                    m.put("nomClient", o.getClient().getPrenom() + " " + o.getClient().getNom());
                     m.put("statut", o.getStatut());
                     m.put("totalTTC", o.getTotalTTC());
+                    m.put("dateCommande", o.getDateCommande());
+                    return m;
+                })
+                .collect(Collectors.toList());
+
+        // Top produits (les plus vendus)
+        Map<Long, Map<String, Object>> produitsVendus = new HashMap<>();
+        
+        commandes.stream()
+                .filter(o -> o.getStatut() != OrderStatus.CANCELLED)
+                .flatMap(o -> o.getLignes().stream())
+                .forEach(item -> {
+                    Long productId = item.getProduit().getId();
+                    produitsVendus.putIfAbsent(productId, new HashMap<>());
+                    Map<String, Object> produitData = produitsVendus.get(productId);
+                    
+                    produitData.put("nomProduit", item.getProduit().getNom());
+                    produitData.put("vendeur", item.getProduit().getSellerProfile().getNomBoutique());
+                    
+                    int quantite = (int) produitData.getOrDefault("quantiteVendue", 0);
+                    produitData.put("quantiteVendue", quantite + item.getQuantite());
+                    
+                    BigDecimal ca_produit = (BigDecimal) produitData.getOrDefault("chiffreAffaires", BigDecimal.ZERO);
+                    produitData.put("chiffreAffaires", 
+                        ca_produit.add(item.getPrixUnitaire().multiply(BigDecimal.valueOf(item.getQuantite()))));
+                });
+
+        List<Map<String, Object>> topProduits = produitsVendus.values().stream()
+                .sorted((p1, p2) -> {
+                    int q1 = (int) p1.get("quantiteVendue");
+                    int q2 = (int) p2.get("quantiteVendue");
+                    return Integer.compare(q2, q1);
+                })
+                .limit(5)
+                .collect(Collectors.toList());
+
+        // Produits récents (ajoutés ce mois)
+        List<Map<String, Object>> produitsRecents = productRepository.findAll().stream()
+                .filter(p -> p.getDateCreation() != null &&
+                        !p.getDateCreation().toLocalDate().isBefore(debutMoisActuel))
+                .sorted(Comparator.comparing(
+                        p -> p.getDateCreation(),
+                        Comparator.nullsLast(Comparator.reverseOrder())
+                ))
+                .limit(5)
+                .map(p -> {
+                    Map<String, Object> m = new HashMap<>();
+                    m.put("id", p.getId());
+                    m.put("nom", p.getNom());
+                    m.put("prix", p.getPrix());
+                    m.put("vendeur", p.getSellerProfile().getNomBoutique());
+                    m.put("dateCreation", p.getDateCreation());
+                    m.put("statut", p.getActif() ? "ACTIF" : "INACTIF");
                     return m;
                 })
                 .collect(Collectors.toList());
@@ -54,9 +128,59 @@ public class DashboardService {
                 .totalCommandes((long) commandes.size())
                 .totalProduits(productRepository.count())
                 .chiffreAffairesGlobal(ca)
-                .topProduits(Collections.emptyList())
+                .croissanceCommandes(croissanceCommandes)
+                .croissanceProduits(calculerCroissanceProduits(debutMoisActuel, debutMoisPrecedent))
+                .croissanceCA(calculerCroissanceCA(commandes, debutMoisActuel, debutMoisPrecedent))
+                .topProduits(topProduits)
                 .commandesRecentes(commandesRecentes)
+                .produitsRecents(produitsRecents)
                 .build();
+    }
+
+    private double calculerCroissance(long valeurPrecedente, long valeurActuelle) {
+        if (valeurPrecedente == 0) return valeurActuelle > 0 ? 100.0 : 0.0;
+        return ((double) (valeurActuelle - valeurPrecedente) / valeurPrecedente) * 100.0;
+    }
+
+    private double calculerCroissanceProduits(java.time.LocalDate debutMoisActuel, java.time.LocalDate debutMoisPrecedent) {
+        long produitsMoisActuel = productRepository.findAll().stream()
+                .filter(p -> p.getDateCreation() != null &&
+                        !p.getDateCreation().toLocalDate().isBefore(debutMoisActuel))
+                .count();
+        
+        long produitsMoisPrecedent = productRepository.findAll().stream()
+                .filter(p -> p.getDateCreation() != null &&
+                        !p.getDateCreation().toLocalDate().isBefore(debutMoisPrecedent) &&
+                        p.getDateCreation().toLocalDate().isBefore(debutMoisActuel))
+                .count();
+        
+        return calculerCroissance(produitsMoisPrecedent, produitsMoisActuel);
+    }
+
+    private double calculerCroissanceCA(List<Order> commandes, java.time.LocalDate debutMoisActuel, java.time.LocalDate debutMoisPrecedent) {
+        BigDecimal caMoisActuel = commandes.stream()
+                .filter(o -> o.getStatut() != OrderStatus.CANCELLED)
+                .filter(o -> o.getDateCommande() != null &&
+                        !o.getDateCommande().toLocalDate().isBefore(debutMoisActuel))
+                .map(Order::getTotalTTC)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        
+        BigDecimal caMoisPrecedent = commandes.stream()
+                .filter(o -> o.getStatut() != OrderStatus.CANCELLED)
+                .filter(o -> o.getDateCommande() != null &&
+                        !o.getDateCommande().toLocalDate().isBefore(debutMoisPrecedent) &&
+                        o.getDateCommande().toLocalDate().isBefore(debutMoisActuel))
+                .map(Order::getTotalTTC)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        
+        if (caMoisPrecedent.compareTo(BigDecimal.ZERO) == 0) {
+            return caMoisActuel.compareTo(BigDecimal.ZERO) > 0 ? 100.0 : 0.0;
+        }
+        
+        return caMoisActuel.subtract(caMoisPrecedent)
+                .divide(caMoisPrecedent, 4, java.math.RoundingMode.HALF_UP)
+                .multiply(BigDecimal.valueOf(100))
+                .doubleValue();
     }
 
     @Transactional(readOnly = true)

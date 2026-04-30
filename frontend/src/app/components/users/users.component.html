@@ -1,0 +1,286 @@
+<div class="users-page">
+
+  <!-- Page header -->
+  <div class="page-header">
+    <div class="header-icon">
+      <mat-icon>people</mat-icon>
+    </div>
+    <div class="header-text">
+      <h2>Utilisateurs</h2>
+      <p>Gestion des acheteurs et vendeurs</p>
+    </div>
+  </div>
+
+  <!-- Stats cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon blue">
+        <mat-icon>people</mat-icon>
+      </div>
+      <div class="stat-body">
+        <div class="stat-value">{{ getTotalUsers() }}</div>
+        <div class="stat-label">Total utilisateurs</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon orange">
+        <mat-icon>store</mat-icon>
+      </div>
+      <div class="stat-body">
+        <div class="stat-value">{{ getUsersByRole('SELLER') }}</div>
+        <div class="stat-label">Vendeurs</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon purple">
+        <mat-icon>shopping_bag</mat-icon>
+      </div>
+      <div class="stat-body">
+        <div class="stat-value">{{ getUsersByRole('CUSTOMER') }}</div>
+        <div class="stat-label">Acheteurs</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon red">
+        <mat-icon>admin_panel_settings</mat-icon>
+      </div>
+      <div class="stat-body">
+        <div class="stat-value">{{ getUsersByRole('ADMIN') }}</div>
+        <div class="stat-label">Administrateurs</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters and table -->
+  <mat-card class="table-card">
+    
+    <!-- Filters -->
+    <div class="filters-bar">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Rechercher</mat-label>
+        <input matInput [(ngModel)]="searchText" (keyup)="applyFilter()" 
+               placeholder="Nom, email...">
+        <mat-icon matPrefix>search</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Rôle</mat-label>
+        <mat-select [(ngModel)]="roleFilter" (selectionChange)="applyFilter()">
+          <mat-option value="ALL">Tous</mat-option>
+          <mat-option value="CUSTOMER">Acheteurs</mat-option>
+          <mat-option value="SELLER">Vendeurs</mat-option>
+          <mat-option value="ADMIN">Administrateurs</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading-container" *ngIf="isLoading">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Chargement des utilisateurs...</p>
+    </div>
+
+    <!-- Table -->
+    <div class="table-container" *ngIf="!isLoading">
+      <table mat-table [dataSource]="dataSource" matSort class="users-table">
+
+        <!-- Nom Column -->
+        <ng-container matColumnDef="nom">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Nom</th>
+          <td mat-cell *matCellDef="let user">
+            <div class="user-cell">
+              <div class="user-avatar">
+                {{ user.prenom.charAt(0) }}{{ user.nom.charAt(0) }}
+              </div>
+              <div class="user-info">
+                <strong>{{ user.prenom }} {{ user.nom }}</strong>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Email Column -->
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+          <td mat-cell *matCellDef="let user">{{ user.email }}</td>
+        </ng-container>
+
+        <!-- Telephone Column -->
+        <ng-container matColumnDef="telephone">
+          <th mat-header-cell *matHeaderCellDef>Téléphone</th>
+          <td mat-cell *matCellDef="let user">{{ user.telephone || '-' }}</td>
+        </ng-container>
+
+        <!-- Role Column -->
+        <ng-container matColumnDef="role">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Rôle</th>
+          <td mat-cell *matCellDef="let user">
+            <span class="role-badge" [ngClass]="getRoleClass(user.role)">
+              {{ getRoleLabel(user.role) }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Date Column -->
+        <ng-container matColumnDef="dateInscription">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Inscription</th>
+          <td mat-cell *matCellDef="let user">{{ user.dateInscription | date:'dd/MM/yyyy' }}</td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let user">
+            <button mat-icon-button [matMenuTriggerFor]="menu" class="action-btn">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item (click)="viewUserDetails(user)">
+                <mat-icon>visibility</mat-icon>
+                <span>Voir détails</span>
+              </button>
+              <button mat-menu-item (click)="toggleUserStatus(user)">
+                <mat-icon>{{ user.actif ? 'block' : 'check_circle' }}</mat-icon>
+                <span>{{ user.actif ? 'Désactiver' : 'Activer' }}</span>
+              </button>
+            </mat-menu>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+        <!-- No data row -->
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+            <div class="no-data">
+              <mat-icon>people_outline</mat-icon>
+              <p>Aucun utilisateur trouvé</p>
+            </div>
+          </td>
+        </tr>
+      </table>
+
+      <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" 
+                     showFirstLastButtons
+                     aria-label="Sélectionner la page">
+      </mat-paginator>
+    </div>
+
+  </mat-card>
+
+</div>
+
+
+<!-- User Detail Dialog -->
+<div class="user-detail-overlay" *ngIf="showDetailDialog" (click)="closeDialog()">
+  <div class="user-detail-container" (click)="$event.stopPropagation()">
+    
+    <!-- Header -->
+    <div class="dialog-header">
+      <div class="dialog-title">
+        <mat-icon>person</mat-icon>
+        <h2>{{ isEditMode ? 'Modifier l\'utilisateur' : 'Détails de l\'utilisateur' }}</h2>
+      </div>
+      <button mat-icon-button (click)="closeDialog()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <!-- Content -->
+    <div class="dialog-content" *ngIf="selectedUser">
+      
+      <!-- View Mode -->
+      <div class="user-details-view" *ngIf="!isEditMode">
+        <div class="user-avatar-large">
+          {{ selectedUser.prenom.charAt(0) }}{{ selectedUser.nom.charAt(0) }}
+        </div>
+
+        <div class="detail-section">
+          <h3>Informations personnelles</h3>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span class="detail-label">Prénom</span>
+              <span class="detail-value">{{ selectedUser.prenom }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Nom</span>
+              <span class="detail-value">{{ selectedUser.nom }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Email</span>
+              <span class="detail-value">{{ selectedUser.email }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Téléphone</span>
+              <span class="detail-value">{{ selectedUser.telephone || 'Non renseigné' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <h3>Informations du compte</h3>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span class="detail-label">Rôle</span>
+              <span class="role-badge" [ngClass]="getRoleClass(selectedUser.role)">
+                {{ getRoleLabel(selectedUser.role) }}
+              </span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Date d'inscription</span>
+              <span class="detail-value">{{ selectedUser.dateInscription | date:'dd/MM/yyyy à HH:mm' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Edit Mode -->
+      <div class="user-details-edit" *ngIf="isEditMode">
+        <form class="edit-form">
+          <div class="form-row-2">
+            <mat-form-field appearance="outline">
+              <mat-label>Prénom</mat-label>
+              <input matInput [(ngModel)]="editForm.prenom" name="prenom" required>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Nom</mat-label>
+              <input matInput [(ngModel)]="editForm.nom" name="nom" required>
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Email</mat-label>
+            <input matInput [(ngModel)]="editForm.email" name="email" type="email" required>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Téléphone</mat-label>
+            <input matInput [(ngModel)]="editForm.telephone" name="telephone">
+          </mat-form-field>
+        </form>
+      </div>
+
+    </div>
+
+    <!-- Actions -->
+    <div class="dialog-actions">
+      <button mat-button (click)="closeDialog()" *ngIf="!isEditMode">Fermer</button>
+      <button mat-raised-button color="primary" (click)="enableEditMode()" *ngIf="!isEditMode">
+        <mat-icon>edit</mat-icon>
+        Modifier
+      </button>
+
+      <button mat-button (click)="cancelEdit()" *ngIf="isEditMode">Annuler</button>
+      <button mat-raised-button color="primary" (click)="saveUserChanges()" *ngIf="isEditMode">
+        <mat-icon>save</mat-icon>
+        Enregistrer
+      </button>
+    </div>
+
+  </div>
+</div>

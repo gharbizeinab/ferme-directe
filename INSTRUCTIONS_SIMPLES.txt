@@ -1,0 +1,130 @@
+╔════════════════════════════════════════════════════════════╗
+║                                                            ║
+║     INSTRUCTIONS POUR PUSH VERS GITHUB                     ║
+║                                                            ║
+╚════════════════════════════════════════════════════════════╝
+
+METHODE 1 : AUTOMATIQUE (Recommandé)
+═══════════════════════════════════════════════════════════
+
+1. Clic droit sur "EXECUTER_NETTOYAGE.bat"
+2. Choisir "Exécuter en tant qu'administrateur"
+3. Attendre que le script termine
+4. Ouvrir Git Bash dans ce dossier
+5. Taper les commandes suivantes :
+
+   git add .
+   git commit -m "chore: reorganisation du projet"
+   git push origin main
+
+
+METHODE 2 : MANUELLE (Si la méthode 1 ne marche pas)
+═══════════════════════════════════════════════════════════
+
+1. Ouvrir PowerShell dans ce dossier :
+   - Shift + Clic droit dans le dossier
+   - Choisir "Ouvrir PowerShell ici"
+
+2. Taper cette commande :
+   
+   powershell -ExecutionPolicy Bypass -File nettoyer.ps1
+
+3. Attendre que le script termine
+
+4. Taper les commandes Git :
+
+   git add .
+   git commit -m "chore: reorganisation du projet"
+   git push origin main
+
+
+METHODE 3 : TOUT MANUEL (Si PowerShell ne marche pas)
+═══════════════════════════════════════════════════════════
+
+1. Supprimer manuellement le dossier "-p"
+
+2. Créer ces dossiers :
+   - docs\setup
+   - docs\guides
+   - docs\troubleshooting
+   - scripts
+
+3. Déplacer les fichiers :
+   
+   Vers docs\setup\ :
+   - CONFIGURATION_INTELLIJ.md
+   - CONFIGURATION_JDK.md
+   - FIX_JDK_INTELLIJ.md
+   - FIX_LOMBOK.md
+   - DEMARRAGE_RAPIDE.md
+   
+   Vers docs\guides\ :
+   - GUIDE_CONNEXION_ADMIN.md
+   - GUIDE_REORGANISATION.md
+   - WORKFLOW_QUOTIDIEN.md
+   - CREER_ADMIN.md
+   - SOLUTION_ADMIN.md
+   
+   Vers scripts\ :
+   - DEMARRER_BACKEND.bat
+   - DEMARRER_FRONTEND.bat
+   - DEMARRER_TOUT.bat
+   - NOUVEAU_REPO_GITHUB.bat
+   - PUSH_PROPRE.bat
+   - cleanup.bat
+
+4. Supprimer ces fichiers :
+   - COMMANDES_GIT_QUOTIDIENNES.txt
+   - COMMANDES_MANUELLES.txt
+   - COMMANDES_URGENTES.txt
+   - LIRE_MOI_URGENT.txt
+   - SOLUTION_URGENTE.md
+   - SOLUTION_RAPIDE.md
+
+5. Ouvrir Git Bash et taper :
+
+   git add .
+   git commit -m "chore: reorganisation du projet"
+   git push origin main
+
+
+VERIFICATION
+═══════════════════════════════════════════════════════════
+
+Avant de push, vérifiez que :
+
+✓ Le dossier "-p" n'existe plus
+✓ Les dossiers docs/ et scripts/ existent
+✓ Il reste peu de fichiers à la racine (README.md, .gitignore, etc.)
+
+
+EN CAS DE PROBLEME
+═══════════════════════════════════════════════════════════
+
+Si "git push" ne marche pas :
+
+1. Vérifier que vous êtes connecté à GitHub :
+   git config user.name
+   git config user.email
+
+2. Si besoin, configurer :
+   git config user.name "Votre Nom"
+   git config user.email "votre@email.com"
+
+3. Vérifier la branche :
+   git branch
+
+4. Si la branche n'est pas "main", créer et pousser :
+   git branch -M main
+   git push -u origin main
+
+
+AIDE
+═══════════════════════════════════════════════════════════
+
+Pour plus d'aide, consultez :
+- GUIDE_PUSH_PROPRE.md
+- RESUME_FINAL.md
+- docs/troubleshooting/
+
+═══════════════════════════════════════════════════════════

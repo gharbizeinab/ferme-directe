@@ -13,6 +13,14 @@ public class AdminDashboardResponse {
     private Long totalCommandes;
     private Long totalProduits;
     private BigDecimal chiffreAffairesGlobal;
+    
+    // Statistiques de croissance (optionnel)
+    private Double croissanceUtilisateurs;  // % de croissance ce mois
+    private Double croissanceCommandes;
+    private Double croissanceProduits;
+    private Double croissanceCA;
+    
     private List<Map<String, Object>> topProduits;
     private List<Map<String, Object>> commandesRecentes;
+    private List<Map<String, Object>> produitsRecents;  // Nouveaux produits
 }

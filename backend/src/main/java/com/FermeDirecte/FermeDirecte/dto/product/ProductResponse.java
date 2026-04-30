@@ -15,10 +15,12 @@ public class ProductResponse {
     private BigDecimal prix;
     private BigDecimal prixPromo;
     private Integer stock;
+    private String unite;
     private Boolean actif;
     private String imageUrl;
     private String nomVendeur;
     private List<String> categories;
     private List<ProductVariantResponse> variantes;
     private Double noteMoyenne;
+    private Integer nombreAvis;
 }

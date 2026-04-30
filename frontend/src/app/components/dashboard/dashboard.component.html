@@ -3,12 +3,12 @@
 <div class="dashboard-page">
 
   <div class="page-header">
-    <div>
-      <h2>
-        <mat-icon>dashboard</mat-icon>
-        Tableau de bord
-      </h2>
-      <p>Vue d'ensemble de votre activité</p>
+    <div class="header-icon">
+      <mat-icon>dashboard</mat-icon>
+    </div>
+    <div class="header-text">
+      <h2>Tableau de bord</h2>
+      <p>Vue d'ensemble de votre plateforme</p>
     </div>
   </div>
 
@@ -30,17 +30,31 @@
         </div>
         <div class="stat-body">
           <div class="stat-value">{{ adminData.totalUtilisateurs }}</div>
-          <div class="stat-label">Utilisateurs</div>
+          <div class="stat-label">UTILISATEURS</div>
+          <div class="stat-growth" *ngIf="adminData.croissanceUtilisateurs !== undefined">
+            <span [class.positive]="adminData.croissanceUtilisateurs >= 0" 
+                  [class.negative]="adminData.croissanceUtilisateurs < 0">
+              <mat-icon>{{ adminData.croissanceUtilisateurs >= 0 ? 'trending_up' : 'trending_down' }}</mat-icon>
+              {{ adminData.croissanceUtilisateurs > 0 ? '+' : '' }}{{ adminData.croissanceUtilisateurs | number:'1.0-0' }}% ce mois
+            </span>
+          </div>
         </div>
       </div>
 
       <div class="stat-card stat-green">
         <div class="stat-icon">
-          <mat-icon>receipt_long</mat-icon>
+          <mat-icon>shopping_cart</mat-icon>
         </div>
         <div class="stat-body">
           <div class="stat-value">{{ adminData.totalCommandes }}</div>
-          <div class="stat-label">Commandes</div>
+          <div class="stat-label">COMMANDES</div>
+          <div class="stat-growth" *ngIf="adminData.croissanceCommandes !== undefined">
+            <span [class.positive]="adminData.croissanceCommandes >= 0" 
+                  [class.negative]="adminData.croissanceCommandes < 0">
+              <mat-icon>{{ adminData.croissanceCommandes >= 0 ? 'trending_up' : 'trending_down' }}</mat-icon>
+              {{ adminData.croissanceCommandes > 0 ? '+' : '' }}{{ adminData.croissanceCommandes | number:'1.0-0' }}% ce mois
+            </span>
+          </div>
         </div>
       </div>
 
@@ -50,17 +64,31 @@
         </div>
         <div class="stat-body">
           <div class="stat-value">{{ adminData.totalProduits }}</div>
-          <div class="stat-label">Produits actifs</div>
+          <div class="stat-label">PRODUITS</div>
+          <div class="stat-growth" *ngIf="adminData.croissanceProduits !== undefined">
+            <span [class.positive]="adminData.croissanceProduits >= 0" 
+                  [class.negative]="adminData.croissanceProduits < 0">
+              <mat-icon>{{ adminData.croissanceProduits >= 0 ? 'trending_up' : 'trending_down' }}</mat-icon>
+              {{ adminData.croissanceProduits > 0 ? '+' : '' }}{{ adminData.croissanceProduits | number:'1.0-0' }}% ce mois
+            </span>
+          </div>
         </div>
       </div>
 
       <div class="stat-card stat-purple">
         <div class="stat-icon">
-          <mat-icon>payments</mat-icon>
+          <mat-icon>account_balance_wallet</mat-icon>
         </div>
         <div class="stat-body">
           <div class="stat-value">{{ adminData.chiffreAffairesGlobal | number:'1.0-0' }} DT</div>
-          <div class="stat-label">Chiffre d'affaires</div>
+          <div class="stat-label">CHIFFRE D'AFFAIRES</div>
+          <div class="stat-growth" *ngIf="adminData.croissanceCA !== undefined">
+            <span [class.positive]="adminData.croissanceCA >= 0" 
+                  [class.negative]="adminData.croissanceCA < 0">
+              <mat-icon>{{ adminData.croissanceCA >= 0 ? 'trending_up' : 'trending_down' }}</mat-icon>
+              {{ adminData.croissanceCA > 0 ? '+' : '' }}{{ adminData.croissanceCA | number:'1.0-0' }}% ce mois
+            </span>
+          </div>
         </div>
       </div>
 
@@ -140,10 +168,61 @@
             <div class="rank-badge" [class]="'rank-' + (i+1)">{{ i + 1 }}</div>
             <div class="product-info">
               <strong>{{ p.nomProduit }}</strong>
-              <span>{{ p.quantiteVendue }} ventes</span>
+              <span class="vendor-name">{{ p.vendeur }}</span>
+              <span class="sales-count">{{ p.quantiteVendue }} ventes</span>
             </div>
             <div class="product-revenue">{{ p.chiffreAffaires | number:'1.2-2' }} DT</div>
           </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Recent products -->
+    <mat-card class="recent-card" *ngIf="adminData.produitsRecents && adminData.produitsRecents.length > 0">
+      <div class="section-header">
+        <mat-icon>fiber_new</mat-icon>
+        <h3>Produits récents</h3>
+      </div>
+      <mat-card-content>
+        <div class="table-wrap">
+          <table mat-table [dataSource]="adminData.produitsRecents" class="recent-table">
+
+            <ng-container matColumnDef="nom">
+              <th mat-header-cell *matHeaderCellDef>Produit</th>
+              <td mat-cell *matCellDef="let p">
+                <strong>{{ p.nom }}</strong>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="vendeur">
+              <th mat-header-cell *matHeaderCellDef>Vendeur</th>
+              <td mat-cell *matCellDef="let p">{{ p.vendeur }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="prix">
+              <th mat-header-cell *matHeaderCellDef>Prix</th>
+              <td mat-cell *matCellDef="let p">
+                <strong>{{ p.prix | number:'1.2-2' }} DT</strong>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="statut">
+              <th mat-header-cell *matHeaderCellDef>Statut</th>
+              <td mat-cell *matCellDef="let p">
+                <span class="status-badge" [class.status-confirmed]="p.statut === 'ACTIF'" [class.status-cancelled]="p.statut === 'INACTIF'">
+                  {{ p.statut }}
+                </span>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="date">
+              <th mat-header-cell *matHeaderCellDef>Date d'ajout</th>
+              <td mat-cell *matCellDef="let p">{{ p.dateCreation | date:'dd/MM/yyyy' }}</td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="['nom', 'vendeur', 'prix', 'statut', 'date']"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['nom', 'vendeur', 'prix', 'statut', 'date'];"></tr>
+          </table>
         </div>
       </mat-card-content>
     </mat-card>

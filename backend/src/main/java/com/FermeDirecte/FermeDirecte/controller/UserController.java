@@ -19,6 +19,16 @@ public class UserController {
     private final UserService userService;
 
     /**
+     * GET /api/users
+     * Récupère tous les utilisateurs (Admin uniquement)
+     */
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
+    }
+
+    /**
      * GET /api/users/profile
      * Récupère le profil de l'utilisateur connecté
      */

@@ -55,6 +55,25 @@ export class OrdersComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.initializeColumns();
     this.loadOrders();
+    this.setupFilter();
+  }
+
+  // Configuration du filtre personnalisé
+  private setupFilter(): void {
+    this.dataSource.filterPredicate = (order: Order, filter: string): boolean => {
+      // Filtre par statut
+      const matchesStatus = !this.selectedStatus || order.statut === this.selectedStatus;
+      
+      // Filtre par recherche textuelle
+      const searchText = filter.toLowerCase();
+      const matchesSearch = !searchText || 
+        order.numeroCommande.toLowerCase().includes(searchText) ||
+        this.getStatusLabel(order.statut).toLowerCase().includes(searchText) ||
+        (order.prenomClient ? order.prenomClient.toLowerCase().includes(searchText) : false) ||
+        (order.nomClient ? order.nomClient.toLowerCase().includes(searchText) : false);
+      
+      return matchesStatus && matchesSearch;
+    };
   }
 
   // Initialisation après la vue
@@ -102,13 +121,8 @@ export class OrdersComponent implements OnInit, AfterViewInit {
 
   // Filtrage par statut
   filterByStatus(): void {
-    if (!this.selectedStatus) {
-      this.dataSource.filterPredicate = () => true;
-      this.dataSource.filter = '';
-    } else {
-      this.dataSource.filterPredicate = (row: Order) => row.statut === this.selectedStatus;
-      this.dataSource.filter = this.selectedStatus;
-    }
+    // Trigger le filtre en changeant la valeur
+    this.dataSource.filter = this.dataSource.filter || ' ';
   }
 
   // Mise à jour du statut d'une commande

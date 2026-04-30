@@ -1,0 +1,42 @@
+========================================
+  FERMEDIRECTE - PUSH VERS GITHUB
+========================================
+
+ETAPES A SUIVRE DANS L'ORDRE :
+
+1. NETTOYER LE PROJET
+   > Double-cliquer sur : NETTOYER_PROJET.bat
+   
+2. VERIFIER QUE TOUT EST PRET
+   > Double-cliquer sur : VERIFIER_AVANT_PUSH.bat
+   
+3. SI TOUT EST OK, SUIVRE LE GUIDE
+   > Ouvrir : GUIDE_PUSH_PROPRE.md
+   
+4. EXECUTER LES COMMANDES GIT
+   > git add .
+   > git commit -m "chore: reorganisation du projet"
+   > git push origin main
+
+========================================
+
+FICHIERS IMPORTANTS :
+
+- NETTOYER_PROJET.bat         : Reorganise automatiquement
+- VERIFIER_AVANT_PUSH.bat     : Verifie avant push
+- GUIDE_PUSH_PROPRE.md        : Guide detaille
+- STRUCTURE_PROPRE.md         : Documentation structure
+- README.md                   : Documentation principale
+
+========================================
+
+EN CAS DE PROBLEME :
+
+1. Verifier .gitignore
+2. Verifier que node_modules/ est ignore
+3. Verifier que target/ est ignore
+4. Consulter docs/troubleshooting/
+
+========================================
+
+BONNE CHANCE ! 🚀

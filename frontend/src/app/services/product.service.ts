@@ -37,6 +37,22 @@ export class ProductService {
     return this.http.get<Page<Product>>(this.base, { params: p });
   }
 
+  // Récupération de TOUS les produits (admin uniquement)
+  getAllProducts(params: {
+    page?: number;
+    size?: number;
+    sortBy?: string;
+    sortDir?: string;
+  } = {}): Observable<Page<Product>> {
+    let p: HttpParams = new HttpParams()
+      .set('page', params.page ?? 0)
+      .set('size', params.size ?? 1000)
+      .set('sortBy', params.sortBy ?? 'dateCreation')
+      .set('sortDir', params.sortDir ?? 'desc');
+
+    return this.http.get<Page<Product>>(`${this.base}/all`, { params: p });
+  }
+
   // Récupération d'un produit par son ID
   getProduct(id: number): Observable<Product> {
     return this.http.get<Product>(`${this.base}/${id}`);

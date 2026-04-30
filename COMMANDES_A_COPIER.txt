@@ -1,0 +1,126 @@
+═══════════════════════════════════════════════════════════
+  COMMANDES A COPIER-COLLER DANS GIT BASH
+═══════════════════════════════════════════════════════════
+
+ETAPE 1 : Ouvrir Git Bash
+──────────────────────────────────────────────────────────
+1. Aller dans le dossier "ferme-directe-complete"
+2. Clic droit dans le dossier
+3. Choisir "Git Bash Here"
+
+
+ETAPE 2 : Supprimer le dossier -p
+──────────────────────────────────────────────────────────
+Copier-coller cette commande :
+
+rm -rf ./-p
+
+
+ETAPE 3 : Créer la structure
+──────────────────────────────────────────────────────────
+Copier-coller ces commandes une par une :
+
+mkdir -p docs/setup
+mkdir -p docs/guides
+mkdir -p docs/troubleshooting
+mkdir -p scripts
+
+
+ETAPE 4 : Déplacer les fichiers de configuration
+──────────────────────────────────────────────────────────
+Copier-coller ces commandes :
+
+mv CONFIGURATION_INTELLIJ.md docs/setup/ 2>/dev/null
+mv CONFIGURATION_JDK.md docs/setup/ 2>/dev/null
+mv FIX_JDK_INTELLIJ.md docs/setup/ 2>/dev/null
+mv FIX_LOMBOK.md docs/setup/ 2>/dev/null
+mv DEMARRAGE_RAPIDE.md docs/setup/ 2>/dev/null
+mv FIX_JDK_RAPIDE.md docs/setup/ 2>/dev/null
+mv FIX_ERREURS_COMPILATION.md docs/troubleshooting/ 2>/dev/null
+
+
+ETAPE 5 : Déplacer les guides
+──────────────────────────────────────────────────────────
+Copier-coller ces commandes :
+
+mv GUIDE_CONNEXION_ADMIN.md docs/guides/ 2>/dev/null
+mv GUIDE_REORGANISATION.md docs/guides/ 2>/dev/null
+mv GUIDE_NOUVEAU_REPO.md docs/guides/ 2>/dev/null
+mv WORKFLOW_QUOTIDIEN.md docs/guides/ 2>/dev/null
+mv CREER_ADMIN.md docs/guides/ 2>/dev/null
+mv SOLUTION_ADMIN.md docs/guides/ 2>/dev/null
+mv LISEZ_MOI_DABORD.md docs/guides/ 2>/dev/null
+mv README_WORKFLOW.md docs/guides/ 2>/dev/null
+
+
+ETAPE 6 : Déplacer la documentation
+──────────────────────────────────────────────────────────
+Copier-coller ces commandes :
+
+mv DASHBOARD_ADMIN_AMELIORE.md docs/ 2>/dev/null
+mv NOUVEAU_DESIGN_DASHBOARD.md docs/ 2>/dev/null
+mv NETTOYAGE_SIDEBAR.md docs/ 2>/dev/null
+mv PAGE_UTILISATEURS_CREEE.md docs/ 2>/dev/null
+mv UNIFICATION_LOGO.md docs/ 2>/dev/null
+mv INDEX_DOCUMENTATION.md docs/ 2>/dev/null
+
+
+ETAPE 7 : Déplacer les scripts
+──────────────────────────────────────────────────────────
+Copier-coller ces commandes :
+
+mv DEMARRER_BACKEND.bat scripts/ 2>/dev/null
+mv DEMARRER_FRONTEND.bat scripts/ 2>/dev/null
+mv DEMARRER_TOUT.bat scripts/ 2>/dev/null
+mv NOUVEAU_REPO_GITHUB.bat scripts/ 2>/dev/null
+mv PUSH_PROPRE.bat scripts/ 2>/dev/null
+mv PUSH_RAPIDE.bat scripts/ 2>/dev/null
+mv cleanup.bat scripts/ 2>/dev/null
+mv cleanup.sh scripts/ 2>/dev/null
+mv fix-git-cache.bat scripts/ 2>/dev/null
+
+
+ETAPE 8 : Supprimer les fichiers obsolètes
+──────────────────────────────────────────────────────────
+Copier-coller ces commandes :
+
+rm -f COMMANDES_GIT_QUOTIDIENNES.txt
+rm -f COMMANDES_MANUELLES.txt
+rm -f COMMANDES_URGENTES.txt
+rm -f COMMANDES_RAPIDES.md
+rm -f LIRE_MOI_URGENT.txt
+rm -f SOLUTION_URGENTE.md
+rm -f SOLUTION_RAPIDE.md
+rm -f SOLUTION_DEFINITIVE.bat
+rm -f NOUVEAU_DEPOT.bat
+
+
+ETAPE 9 : Vérifier
+──────────────────────────────────────────────────────────
+Copier-coller cette commande :
+
+ls -la
+
+
+ETAPE 10 : Push vers GitHub
+──────────────────────────────────────────────────────────
+Copier-coller ces commandes une par une :
+
+git add .
+
+git commit -m "chore: reorganisation complete du projet
+
+- Suppression du dossier vide -p
+- Organisation de la documentation dans docs/
+- Organisation des scripts dans scripts/
+- Nettoyage des fichiers obsoletes
+- Structure propre et professionnelle"
+
+git push origin main
+
+
+═══════════════════════════════════════════════════════════
+  C'EST TERMINE !
+═══════════════════════════════════════════════════════════
+
+Votre projet est maintenant propre et pousse vers GitHub !

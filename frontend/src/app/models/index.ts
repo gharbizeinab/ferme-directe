@@ -208,9 +208,17 @@ export interface AdminDashboard {
   totalCommandes: number;
   totalProduits: number;
   chiffreAffairesGlobal: number;
-  commandesRecentes: Order[];
+  
+  // Croissances (%)
+  croissanceUtilisateurs?: number;
+  croissanceCommandes?: number;
+  croissanceProduits?: number;
+  croissanceCA?: number;
+  
+  commandesRecentes: any[];
+  produitsRecents?: any[];
   ventesParCategorie?: { categorie: string; total: number }[];
-  topProduits?: { nomProduit: string; quantiteVendue: number; chiffreAffaires: number }[];
+  topProduits?: any[];
 }
 
 export interface SellerDashboard {

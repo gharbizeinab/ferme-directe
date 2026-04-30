@@ -30,6 +30,12 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
+    public Page<ProductResponse> listerTousLesProduits(Pageable pageable) {
+        // Pour l'admin : retourner TOUS les produits (actifs ET inactifs)
+        return productRepository.findAll(pageable).map(this::toResponse);
+    }
+
+    @Transactional(readOnly = true)
     public Page<ProductResponse> listerMesProduits(String email, Pageable pageable) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Utilisateur introuvable"));
@@ -183,6 +189,8 @@ public class ProductService {
                 .average()
                 .orElse(0.0);
 
+        int nombreAvis = p.getAvis().size();
+
         List<String> categories = p.getCategories().stream()
                 .map(Category::getNom)
                 .collect(Collectors.toList());
@@ -204,12 +212,14 @@ public class ProductService {
                 .prix(p.getPrix())
                 .prixPromo(p.getPrixPromo())
                 .stock(p.getStock())
+                .unite(p.getUnite())
                 .actif(p.getActif())
                 .imageUrl(p.getImageUrl())
                 .nomVendeur(p.getSellerProfile().getNomBoutique())
                 .categories(categories)
                 .variantes(variantes)
                 .noteMoyenne(noteMoyenne)
+                .nombreAvis(nombreAvis)
                 .build();
     }
 }

@@ -45,6 +45,7 @@ import { ManageProductsComponent } from './components/manage-products/manage-pro
 import { OrdersComponent } from './components/orders/orders.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { ProfileComponent } from './components/profile/profile.component';
+import { UsersComponent } from './components/users/users.component';
 
 // Guards & Interceptor
 import { AuthGuard, RoleGuard } from './guards/auth.guard';
@@ -65,9 +66,11 @@ const routes: Routes = [
       { path: 'checkout',        component: CheckoutComponent,      canActivate: [AuthGuard] },
       { path: 'orders',            component: OrdersComponent,          canActivate: [AuthGuard] },
       { path: 'profile',           component: ProfileComponent,         canActivate: [AuthGuard] },
+      { path: 'users',             component: UsersComponent,           canActivate: [AuthGuard, RoleGuard], data: { roles: ['ADMIN'] } },
       { path: 'all-orders',        component: OrdersComponent,          canActivate: [AuthGuard, RoleGuard], data: { roles: ['ADMIN'] } },
       { path: 'dashboard',         component: DashboardComponent,       canActivate: [AuthGuard, RoleGuard], data: { roles: ['ADMIN', 'SELLER'] } },
       { path: 'manage-products',   component: ManageProductsComponent,  canActivate: [AuthGuard, RoleGuard], data: { roles: ['ADMIN', 'SELLER'] } },
+      { path: 'manage-products/new', component: ManageProductsComponent,  canActivate: [AuthGuard, RoleGuard], data: { roles: ['ADMIN', 'SELLER'] } },
       { path: 'manage-categories', component: ManageCategoriesComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: ['ADMIN'] } },
     ]
   },
@@ -90,6 +93,7 @@ const routes: Routes = [
     ConfirmDialogComponent,
     ManageCategoriesComponent,
     ProfileComponent,
+    UsersComponent,
   ],
   imports: [
     BrowserModule,

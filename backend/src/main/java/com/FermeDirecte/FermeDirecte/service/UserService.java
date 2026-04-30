@@ -20,6 +20,27 @@ public class UserService {
     private final UserRepository userRepository;
 
     /**
+     * Récupère tous les utilisateurs (Admin uniquement)
+     */
+    @Transactional(readOnly = true)
+    public java.util.List<java.util.Map<String, Object>> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(user -> {
+                    java.util.Map<String, Object> userMap = new java.util.HashMap<>();
+                    userMap.put("id", user.getId());
+                    userMap.put("email", user.getEmail());
+                    userMap.put("prenom", user.getPrenom());
+                    userMap.put("nom", user.getNom());
+                    userMap.put("telephone", user.getTelephone());
+                    userMap.put("role", user.getRole());
+                    userMap.put("actif", user.getActif());
+                    userMap.put("dateInscription", user.getDateCreation());
+                    return userMap;
+                })
+                .collect(Collectors.toList());
+    }
+
+    /**
      * Récupère le profil complet de l'utilisateur
      */
     @Transactional(readOnly = true)

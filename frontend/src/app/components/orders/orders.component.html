@@ -24,11 +24,12 @@
       <mat-label>Statut</mat-label>
       <mat-select [(ngModel)]="selectedStatus" (selectionChange)="filterByStatus()">
         <mat-option value="">Tous</mat-option>
-        <mat-option value="EN_ATTENTE">En attente</mat-option>
-        <mat-option value="CONFIRME">Confirmé</mat-option>
-        <mat-option value="EN_LIVRAISON">En livraison</mat-option>
-        <mat-option value="LIVRE">Livré</mat-option>
-        <mat-option value="ANNULE">Annulé</mat-option>
+        <mat-option value="PENDING">En attente</mat-option>
+        <mat-option value="PAID">Confirmé</mat-option>
+        <mat-option value="PROCESSING">En préparation</mat-option>
+        <mat-option value="SHIPPED">En livraison</mat-option>
+        <mat-option value="DELIVERED">Livré</mat-option>
+        <mat-option value="CANCELLED">Annulé</mat-option>
       </mat-select>
     </mat-form-field>
   </div>
