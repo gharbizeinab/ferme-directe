@@ -1,0 +1,222 @@
+/* Version Material Design du formulaire coupon */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.coupon-form-card {
+  width: 100%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+/* Header */
+mat-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  margin: -16px -16px 20px -16px;
+}
+
+mat-card-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0 !important;
+  color: white;
+}
+
+mat-card-title mat-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+}
+
+.close-button {
+  color: white;
+}
+
+/* Preview Card */
+.preview-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 15px 20px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 16px;
+  border-radius: 8px;
+}
+
+.preview-card mat-icon {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+/* Sections */
+.form-section {
+  margin-bottom: 24px;
+}
+
+mat-divider {
+  margin: 24px 0 16px 0;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #667eea;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 16px 0;
+}
+
+.section-title mat-icon {
+  font-size: 22px;
+  width: 22px;
+  height: 22px;
+}
+
+/* Form Fields */
+.full-width {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.half-width {
+  flex: 1;
+}
+
+/* Material Form Field Customization */
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {
+  color: rgba(0, 0, 0, 0.12);
+}
+
+::ng-deep .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
+  color: #667eea;
+}
+
+::ng-deep .mat-form-field-appearance-outline.mat-focused .mat-form-field-label {
+  color: #667eea;
+}
+
+/* Checkbox */
+mat-checkbox {
+  margin: 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+::ng-deep .mat-checkbox-checked .mat-checkbox-background {
+  background-color: #667eea;
+}
+
+/* Actions */
+mat-card-actions {
+  padding: 16px 24px;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  margin: 20px -16px -16px -16px;
+  gap: 12px;
+}
+
+mat-card-actions button {
+  min-width: 120px;
+}
+
+/* Primary Button */
+::ng-deep .mat-raised-button.mat-primary {
+  background-color: #667eea;
+}
+
+::ng-deep .mat-raised-button.mat-primary:hover {
+  background-color: #5568d3;
+}
+
+/* Spinner in button */
+mat-spinner {
+  display: inline-block;
+  margin-right: 8px;
+}
+
+/* Icons in form fields */
+::ng-deep .mat-form-field-prefix mat-icon,
+::ng-deep .mat-form-field-suffix mat-icon {
+  color: rgba(0, 0, 0, 0.54);
+}
+
+::ng-deep .mat-form-field-appearance-outline.mat-focused .mat-form-field-prefix mat-icon {
+  color: #667eea;
+}
+
+/* Select Options */
+::ng-deep .mat-option mat-icon {
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .coupon-form-card {
+    max-width: 100%;
+    margin: 10px;
+  }
+
+  .form-row {
+    flex-direction: column;
+  }
+
+  .half-width {
+    width: 100%;
+  }
+
+  mat-card-title {
+    font-size: 20px;
+  }
+}
+
+/* Scrollbar */
+.coupon-form-card::-webkit-scrollbar {
+  width: 8px;
+}
+
+.coupon-form-card::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.coupon-form-card::-webkit-scrollbar-thumb {
+  background: #667eea;
+  border-radius: 4px;
+}
+
+.coupon-form-card::-webkit-scrollbar-thumb:hover {
+  background: #5568d3;
+}

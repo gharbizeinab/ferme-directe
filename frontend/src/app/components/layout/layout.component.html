@@ -73,6 +73,18 @@
         <span matListItemTitle>Commandes</span>
       </a>
 
+      <a mat-list-item routerLink="/admin/coupons" routerLinkActive="active-link"
+         *ngIf="authService.isAdmin()">
+        <mat-icon matListItemIcon>local_offer</mat-icon>
+        <span matListItemTitle>Coupons</span>
+      </a>
+
+      <a mat-list-item routerLink="/seller/coupons" routerLinkActive="active-link"
+         *ngIf="authService.isSeller()">
+        <mat-icon matListItemIcon>confirmation_number</mat-icon>
+        <span matListItemTitle>Mes Coupons</span>
+      </a>
+
     </mat-nav-list>
 
     <div class="sidenav-spacer"></div>

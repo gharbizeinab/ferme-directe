@@ -18,6 +18,7 @@ public class OrderResponse {
     private PaymentStatus statutPaiement;
     private List<OrderItemResponse> lignes;
     private BigDecimal sousTotal;
+    private BigDecimal remise;
     private BigDecimal fraisLivraison;
     private BigDecimal totalTTC;
     private LocalDateTime dateCommande;

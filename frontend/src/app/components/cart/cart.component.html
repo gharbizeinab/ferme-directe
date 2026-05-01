@@ -91,7 +91,8 @@
         </div>
       </mat-card>
 
-      <!-- Coupon -->
+      <!-- Coupon - Désactivé : Les coupons sont appliqués au checkout -->
+      <!-- 
       <mat-card class="coupon-card">
         <div class="section-header">
           <mat-icon>local_offer</mat-icon>
@@ -112,6 +113,15 @@
         <div class="coupon-success" *ngIf="couponApplied">
           <mat-icon>savings</mat-icon>
           <span>Code promo appliqué — {{ cart.remise | number:'1.2-2' }} DT de réduction</span>
+        </div>
+      </mat-card>
+      -->
+
+      <!-- Info : Les codes promo sont appliqués lors du checkout -->
+      <mat-card class="info-card">
+        <div class="info-content">
+          <mat-icon color="primary">info</mat-icon>
+          <span>Vous pourrez appliquer un code promo lors de la finalisation de votre commande</span>
         </div>
       </mat-card>
 

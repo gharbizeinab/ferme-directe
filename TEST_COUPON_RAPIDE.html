@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Rapide - Coupons Ferme Directe</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            padding: 30px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin-right: 10px;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button.secondary {
+            background: #6c757d;
+        }
+        
+        button.secondary:hover {
+            background: #5a6268;
+        }
+        
+        button.success {
+            background: #28a745;
+        }
+        
+        button.success:hover {
+            background: #218838;
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .result.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        
+        .result.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        
+        .result.info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .status-badge.ok {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-badge.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        @media (max-width: 600px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test Rapide - Système de Coupons</h1>
+        <p class="subtitle">Ferme Directe - Environnement de Test</p>
+        
+        <!-- Section 1 : Vérification Token -->
+        <div class="section">
+            <h2>1️⃣ Vérification du Token</h2>
+            <button onclick="checkToken()">Vérifier le Token</button>
+            <div id="tokenResult"></div>
+        </div>
+        
+        <!-- Section 2 : Test Validation Coupon -->
+        <div class="section">
+            <h2>2️⃣ Test de Validation de Coupon</h2>
+            <div class="grid">
+                <div class="input-group">
+                    <label>Code Coupon</label>
+                    <select id="couponCode">
+                        <option value="TEST1">TEST1 (10% global)</option>
+                        <option value="TEST2">TEST2 (hybride vendeur)</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Sous-total (DT)</label>
+                    <input type="number" id="sousTotal" value="21.45" step="0.01">
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Frais de Livraison (DT)</label>
+                <input type="number" id="fraisLivraison" value="0" step="0.01">
+            </div>
+            <button onclick="validateCoupon()">Valider le Coupon</button>
+            <div id="validateResult"></div>
+        </div>
+        
+        <!-- Section 3 : Test Création Commande -->
+        <div class="section">
+            <h2>3️⃣ Test de Création de Commande</h2>
+            <div class="input-group">
+                <label>Code Coupon (optionnel)</label>
+                <input type="text" id="orderCoupon" placeholder="TEST1 ou TEST2">
+            </div>
+            <button onclick="createTestOrder()" class="success">Créer une Commande de Test</button>
+            <button onclick="createTestOrder(true)" class="secondary">Sans Coupon</button>
+            <div id="orderResult"></div>
+        </div>
+        
+        <!-- Section 4 : Vérification Panier -->
+        <div class="section">
+            <h2>4️⃣ Vérification du Panier</h2>
+            <button onclick="checkCart()">Voir le Panier</button>
+            <div id="cartResult"></div>
+        </div>
+        
+        <!-- Section 5 : Logs Backend -->
+        <div class="section">
+            <h2>5️⃣ Instructions</h2>
+            <p style="color: #666; line-height: 1.6; font-size: 14px;">
+                <strong>Avant de tester :</strong><br>
+                1. Assurez-vous que le backend est démarré (port 8080)<br>
+                2. Assurez-vous que vous êtes connecté dans l'application<br>
+                3. Exécutez le script SQL de nettoyage dans phpMyAdmin<br>
+                4. Rafraîchissez cette page (F5)<br><br>
+                
+                <strong>Ordre des tests :</strong><br>
+                1. Vérifier le token (doit être présent)<br>
+                2. Valider un coupon (doit retourner status 200)<br>
+                3. Vérifier le panier (doit contenir des articles)<br>
+                4. Créer une commande de test<br><br>
+                
+                <strong>En cas d'erreur :</strong><br>
+                - Copiez le message d'erreur complet<br>
+                - Vérifiez les logs du backend dans le terminal<br>
+                - Vérifiez que les coupons TEST1 et TEST2 existent dans la base
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        const API_URL = 'http://localhost:8080/api';
+        
+        function getToken() {
+            return localStorage.getItem('fd_token');
+        }
+        
+        function showResult(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="result ${type}">${message}</div>`;
+        }
+        
+        function checkToken() {
+            const token = getToken();
+            if (token) {
+                showResult('tokenResult', 
+                    `✅ Token présent\n\nToken: ${token.substring(0, 50)}...`, 
+                    'success'
+                );
+            } else {
+                showResult('tokenResult', 
+                    '❌ Token absent\n\nVeuillez vous connecter dans l\'application Angular.', 
+                    'error'
+                );
+            }
+        }
+        
+        async function validateCoupon() {
+            const token = getToken();
+            if (!token) {
+                showResult('validateResult', '❌ Token absent. Connectez-vous d\'abord.', 'error');
+                return;
+            }
+            
+            const code = document.getElementById('couponCode').value;
+            const sousTotal = document.getElementById('sousTotal').value;
+            const fraisLivraison = document.getElementById('fraisLivraison').value;
+            
+            showResult('validateResult', '⏳ Validation en cours...', 'info');
+            
+            try {
+                const response = await fetch(
+                    `${API_URL}/coupons/validate?code=${code}&sousTotal=${sousTotal}&fraisLivraison=${fraisLivraison}`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    }
+                );
+                
+                const data = await response.json();
+                
+                if (response.ok && data.valide) {
+                    showResult('validateResult', 
+                        `✅ COUPON VALIDE !\n\n` +
+                        `Status: ${response.status}\n` +
+                        `Message: ${data.message}\n\n` +
+                        `💰 Détails de la réduction:\n` +
+                        `- Réduction pourcentage: ${data.reductionPourcentage || 0} DT\n` +
+                        `- Réduction montant fixe: ${data.reductionMontantFixe || 0} DT\n` +
+                        `- Réduction livraison: ${data.reductionLivraison || 0} DT\n` +
+                        `- RÉDUCTION TOTALE: ${data.reductionTotale || 0} DT\n\n` +
+                        `📊 Calcul:\n` +
+                        `- Sous-total: ${data.sousTotal || sousTotal} DT\n` +
+                        `- Frais livraison: ${data.fraisLivraison || fraisLivraison} DT\n` +
+                        `- Total avant coupon: ${data.totalAvantCoupon || 0} DT\n` +
+                        `- Total après coupon: ${data.totalApresCoupon || 0} DT`,
+                        'success'
+                    );
+                } else {
+                    showResult('validateResult', 
+                        `❌ COUPON INVALIDE\n\n` +
+                        `Status: ${response.status}\n` +
+                        `Message: ${data.message || 'Erreur inconnue'}\n\n` +
+                        `Réponse complète:\n${JSON.stringify(data, null, 2)}`,
+                        'error'
+                    );
+                }
+            } catch (error) {
+                showResult('validateResult', 
+                    `❌ ERREUR RÉSEAU\n\n` +
+                    `${error.message}\n\n` +
+                    `Vérifiez que le backend est démarré sur le port 8080.`,
+                    'error'
+                );
+            }
+        }
+        
+        async function checkCart() {
+            const token = getToken();
+            if (!token) {
+                showResult('cartResult', '❌ Token absent. Connectez-vous d\'abord.', 'error');
+                return;
+            }
+            
+            showResult('cartResult', '⏳ Chargement du panier...', 'info');
+            
+            try {
+                const response = await fetch(`${API_URL}/cart`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const cart = await response.json();
+                
+                if (response.ok) {
+                    showResult('cartResult', 
+                        `✅ PANIER CHARGÉ\n\n` +
+                        `Nombre d'articles: ${cart.lignes?.length || 0}\n` +
+                        `Sous-total: ${cart.sousTotal || 0} DT\n` +
+                        `Remise: ${cart.remise || 0} DT\n` +
+                        `Total: ${cart.total || 0} DT\n\n` +
+                        `Articles:\n${cart.lignes?.map(l => `- ${l.nomProduit} x${l.quantite} = ${l.sousTotal} DT`).join('\n') || 'Aucun'}`,
+                        cart.lignes?.length > 0 ? 'success' : 'info'
+                    );
+                } else {
+                    showResult('cartResult', 
+                        `❌ ERREUR\n\nStatus: ${response.status}\n${JSON.stringify(cart, null, 2)}`,
+                        'error'
+                    );
+                }
+            } catch (error) {
+                showResult('cartResult', `❌ ERREUR RÉSEAU\n\n${error.message}`, 'error');
+            }
+        }
+        
+        async function createTestOrder(withoutCoupon = false) {
+            const token = getToken();
+            if (!token) {
+                showResult('orderResult', '❌ Token absent. Connectez-vous d\'abord.', 'error');
+                return;
+            }
+            
+            const couponCode = withoutCoupon ? undefined : document.getElementById('orderCoupon').value.trim();
+            
+            const orderData = {
+                adresse: {
+                    prenom: 'Test',
+                    nom: 'User',
+                    rue: '123 Rue de Test',
+                    codePostal: '1000',
+                    ville: 'Tunis',
+                    pays: 'Tunisie',
+                    telephone: '12345678'
+                },
+                modePaiement: 'ESPECES',
+                notes: 'Commande de test depuis le script HTML',
+                codeCoupon: couponCode || undefined
+            };
+            
+            showResult('orderResult', '⏳ Création de la commande...', 'info');
+            
+            try {
+                const response = await fetch(`${API_URL}/orders`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(orderData)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('orderResult', 
+                        `✅ COMMANDE CRÉÉE AVEC SUCCÈS !\n\n` +
+                        `Numéro: ${data.numeroCommande}\n` +
+                        `Statut: ${data.statut}\n` +
+                        `Total: ${data.totalTTC} DT\n` +
+                        `Date: ${data.dateCommande}\n\n` +
+                        `${couponCode ? `Coupon appliqué: ${couponCode}` : 'Sans coupon'}`,
+                        'success'
+                    );
+                } else {
+                    showResult('orderResult', 
+                        `❌ ERREUR ${response.status}\n\n` +
+                        `Message: ${data.message || 'Erreur inconnue'}\n\n` +
+                        `Réponse complète:\n${JSON.stringify(data, null, 2)}`,
+                        'error'
+                    );
+                }
+            } catch (error) {
+                showResult('orderResult', `❌ ERREUR RÉSEAU\n\n${error.message}`, 'error');
+            }
+        }
+        
+        // Vérifier le token au chargement
+        window.addEventListener('load', () => {
+            checkToken();
+        });
+    </script>
+</body>
+</html>

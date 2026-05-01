@@ -225,6 +225,49 @@
 
         </div>
 
+        <!-- Coupon Section -->
+        <div class="coupon-section" *ngIf="cart">
+          <h4 class="coupon-title">
+            <mat-icon>local_offer</mat-icon>
+            Code promo
+          </h4>
+          
+          <!-- Coupon appliqué -->
+          <div class="coupon-applied" *ngIf="appliedCoupon">
+            <div class="coupon-badge">
+              <mat-icon>check_circle</mat-icon>
+              <div class="coupon-info">
+                <strong>{{ appliedCoupon.codeApplique }}</strong>
+                <span>Réduction de {{ appliedCoupon.reductionTotale | number:'1.2-2' }} DT appliquée</span>
+              </div>
+              <button mat-icon-button (click)="removeCoupon()" class="remove-coupon-btn">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <!-- Formulaire coupon -->
+          <div class="coupon-form" *ngIf="!appliedCoupon">
+            <mat-form-field appearance="outline" class="coupon-input">
+              <mat-label>Entrez votre code promo</mat-label>
+              <input matInput [(ngModel)]="couponCode" (keyup.enter)="applyCoupon()" 
+                     placeholder="Ex: BIENVENUE10" [disabled]="isValidatingCoupon">
+              <mat-icon matSuffix>local_offer</mat-icon>
+            </mat-form-field>
+            <button mat-raised-button color="primary" (click)="applyCoupon()" 
+                    [disabled]="!couponCode || isValidatingCoupon" class="apply-coupon-btn">
+              <mat-spinner *ngIf="isValidatingCoupon" diameter="18"></mat-spinner>
+              <span *ngIf="!isValidatingCoupon">Appliquer</span>
+            </button>
+          </div>
+
+          <!-- Erreur coupon -->
+          <div class="coupon-error" *ngIf="couponError">
+            <mat-icon>error_outline</mat-icon>
+            <span>{{ couponError }}</span>
+          </div>
+        </div>
+
         <!-- Items recap -->
         <div class="recap-items" *ngIf="cart">
           <h4 class="recap-title">Articles commandés</h4>
@@ -237,20 +280,25 @@
           <div class="recap-totals">
             <div class="recap-row">
               <span>Sous-total</span>
-              <span>{{ cart.sousTotal | number:'1.2-2' }} DT</span>
+              <span>{{ cartSubtotal | number:'1.2-2' }} DT</span>
             </div>
             <div class="recap-row discount" *ngIf="cart.remise > 0">
-              <span>Réduction</span>
+              <span>Réduction panier</span>
               <span>-{{ cart.remise | number:'1.2-2' }} DT</span>
+            </div>
+            <div class="recap-row discount" *ngIf="appliedCoupon && totalDiscount > 0">
+              <span>Réduction coupon ({{ appliedCoupon.codeApplique }})</span>
+              <span>-{{ totalDiscount | number:'1.2-2' }} DT</span>
             </div>
             <div class="recap-row shipping">
               <span>Livraison</span>
-              <span class="free">Gratuite</span>
+              <span *ngIf="cartDeliveryFee === 0" class="free">Gratuite</span>
+              <span *ngIf="cartDeliveryFee > 0">{{ cartDeliveryFee | number:'1.2-2' }} DT</span>
             </div>
             <div class="recap-divider"></div>
             <div class="recap-row total">
               <strong>Total à payer</strong>
-              <strong class="total-amount">{{ cart.total | number:'1.2-2' }} DT</strong>
+              <strong class="total-amount">{{ cartTotal | number:'1.2-2' }} DT</strong>
             </div>
           </div>
         </div>

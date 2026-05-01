@@ -49,6 +49,10 @@ public class Order {
     @Column(name = "sous_total", nullable = false, precision = 19, scale = 2)
     private BigDecimal sousTotal;
 
+    @Column(name = "remise", nullable = false, precision = 19, scale = 2)
+    @Builder.Default
+    private BigDecimal remise = BigDecimal.ZERO;
+
     @Column(name = "frais_livraison", nullable = false, precision = 19, scale = 2)
     @Builder.Default
     private BigDecimal fraisLivraison = BigDecimal.ZERO;

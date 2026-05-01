@@ -105,7 +105,8 @@ export interface Cart {
   sousTotal: number;
   remise: number;
   total: number;
-  couponCode?: string;
+  fraisLivraison?: number;
+  codeCoupon?: string;
 }
 
 export interface AddToCartRequest {
@@ -164,7 +165,7 @@ export interface Order {
 export interface OrderRequest {
   adresse: Address;
   modePaiement: string;
-  couponCode?: string;
+  codeCoupon?: string;
   notes?: string;
 }
 
@@ -238,3 +239,6 @@ export interface SellerDashboard {
     annulees: number;
   };
 }
+
+// --- Coupon ---
+export * from './coupon.model';

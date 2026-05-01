@@ -4,6 +4,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 // Angular Material
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -30,6 +31,9 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 // Components
 import { AppComponent } from './app.component';
@@ -46,6 +50,9 @@ import { OrdersComponent } from './components/orders/orders.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { UsersComponent } from './components/users/users.component';
+import { AdminCouponsComponent } from './components/admin-coupons/admin-coupons.component';
+import { SellerCouponsComponent } from './components/seller-coupons/seller-coupons.component';
+import { CouponFormComponent } from './components/coupon-form/coupon-form.component';
 
 // Guards & Interceptor
 import { AuthGuard, RoleGuard } from './guards/auth.guard';
@@ -72,6 +79,8 @@ const routes: Routes = [
       { path: 'manage-products',   component: ManageProductsComponent,  canActivate: [AuthGuard, RoleGuard], data: { roles: ['ADMIN', 'SELLER'] } },
       { path: 'manage-products/new', component: ManageProductsComponent,  canActivate: [AuthGuard, RoleGuard], data: { roles: ['ADMIN', 'SELLER'] } },
       { path: 'manage-categories', component: ManageCategoriesComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: ['ADMIN'] } },
+      { path: 'admin/coupons',     component: AdminCouponsComponent,     canActivate: [AuthGuard, RoleGuard], data: { roles: ['ADMIN'] } },
+      { path: 'seller/coupons',    component: SellerCouponsComponent,    canActivate: [AuthGuard, RoleGuard], data: { roles: ['SELLER'] } },
     ]
   },
   { path: '**', redirectTo: '/products' }
@@ -94,9 +103,13 @@ const routes: Routes = [
     ManageCategoriesComponent,
     ProfileComponent,
     UsersComponent,
+    AdminCouponsComponent,
+    SellerCouponsComponent,
+    CouponFormComponent,
   ],
   imports: [
     BrowserModule,
+    CommonModule,
     BrowserAnimationsModule,
     HttpClientModule,
     FormsModule,
@@ -109,7 +122,7 @@ const routes: Routes = [
     MatProgressSpinnerModule, MatSnackBarModule, MatDialogModule,
     MatBadgeModule, MatTooltipModule, MatStepperModule, MatChipsModule,
     MatMenuModule, MatRadioModule, MatSlideToggleModule, MatDividerModule,
-    MatExpansionModule,
+    MatExpansionModule, MatCheckboxModule, MatDatepickerModule, MatNativeDateModule,
   ],
   providers: [
     AuthGuard,

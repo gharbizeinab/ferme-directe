@@ -1,0 +1,156 @@
+<!-- src/app/components/admin-coupons/admin-coupons.component.html -->
+<div class="admin-coupons-container">
+  <div class="header">
+    <h1>Gestion des Coupons</h1>
+    <button class="btn btn-primary" (click)="openCreateForm()">
+      <i class="fas fa-plus"></i> Créer un coupon global
+    </button>
+  </div>
+
+  <!-- Filtres -->
+  <div class="filters-section">
+    <div class="filter-group">
+      <label>Recherche</label>
+      <input 
+        type="text" 
+        [(ngModel)]="searchTerm" 
+        (ngModelChange)="applyFilters()"
+        placeholder="Code ou description..."
+        class="form-control">
+    </div>
+
+    <div class="filter-group">
+      <label>Portée</label>
+      <select [(ngModel)]="filterScope" (ngModelChange)="applyFilters()" class="form-control">
+        <option value="ALL">Tous</option>
+        <option value="GLOBAL">Globaux</option>
+        <optgroup label="Vendeurs">
+          <option *ngFor="let seller of sellers" [value]="seller.id">
+            {{ seller.nomComplet }}
+          </option>
+        </optgroup>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label>Statut</label>
+      <select [(ngModel)]="filterStatus" (ngModelChange)="applyFilters()" class="form-control">
+        <option value="ALL">Tous</option>
+        <option value="ACTIVE">Actifs</option>
+        <option value="BLOCKED">Bloqués</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label>Tri par date</label>
+      <select [(ngModel)]="sortOrder" (ngModelChange)="applyFilters()" class="form-control">
+        <option value="DESC">Plus récent d'abord</option>
+        <option value="ASC">Plus ancien d'abord</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading">
+    <i class="fas fa-spinner fa-spin"></i> Chargement...
+  </div>
+
+  <!-- Liste des coupons -->
+  <div *ngIf="!loading" class="coupons-grid">
+    <div *ngFor="let coupon of filteredCoupons" class="coupon-card">
+      <div class="coupon-header">
+        <div class="coupon-code">{{ coupon.code }}</div>
+        <span class="coupon-badge" [ngClass]="getStatusClass(coupon)">
+          {{ getStatusText(coupon) }}
+        </span>
+      </div>
+
+      <div class="coupon-body">
+        <p class="coupon-description">{{ coupon.description }}</p>
+        
+        <div class="coupon-reduction">
+          <i class="fas fa-tag"></i>
+          <strong>{{ getReductionText(coupon) }}</strong>
+        </div>
+
+        <div class="coupon-details">
+          <div class="detail-item">
+            <i class="fas fa-globe"></i>
+            <span>{{ coupon.scope === 'GLOBAL' ? 'Global' : 'Vendeur: ' + coupon.vendeurNom }}</span>
+          </div>
+
+          <div class="detail-item" *ngIf="coupon.montantMinimum">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Min: {{ coupon.montantMinimum }} DT</span>
+          </div>
+
+          <div class="detail-item">
+            <i class="fas fa-users"></i>
+            <span>{{ coupon.usagesActuels }} / {{ coupon.usagesMaxGlobal }} utilisations</span>
+          </div>
+
+          <div class="detail-item">
+            <i class="fas fa-calendar"></i>
+            <span>Expire le {{ formatDate(coupon.dateExpiration) }}</span>
+          </div>
+
+          <div class="detail-item" *ngIf="coupon.montantTotalEconomise">
+            <i class="fas fa-coins"></i>
+            <span>{{ coupon.montantTotalEconomise }} DT économisés</span>
+          </div>
+        </div>
+
+        <div class="progress-bar">
+          <div 
+            class="progress-fill" 
+            [style.width.%]="(coupon.usagesActuels / coupon.usagesMaxGlobal) * 100">
+          </div>
+        </div>
+      </div>
+
+      <div class="coupon-actions">
+        <button 
+          class="btn btn-sm btn-info" 
+          (click)="openEditForm(coupon)"
+          [disabled]="coupon.bloque">
+          <i class="fas fa-edit"></i> Modifier
+        </button>
+
+        <button 
+          *ngIf="!coupon.bloque"
+          class="btn btn-sm btn-warning" 
+          (click)="blockCoupon(coupon.id)">
+          <i class="fas fa-ban"></i> Bloquer
+        </button>
+
+        <button 
+          *ngIf="coupon.bloque"
+          class="btn btn-sm btn-success" 
+          (click)="unblockCoupon(coupon.id)">
+          <i class="fas fa-check"></i> Débloquer
+        </button>
+
+        <button 
+          class="btn btn-sm btn-danger" 
+          (click)="deleteCoupon(coupon.id)"
+          [disabled]="coupon.usagesActuels > 0">
+          <i class="fas fa-trash"></i> Supprimer
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="filteredCoupons.length === 0" class="no-coupons">
+      <i class="fas fa-ticket-alt"></i>
+      <p>Aucun coupon trouvé</p>
+    </div>
+  </div>
+
+  <!-- Formulaire modal -->
+  <app-coupon-form
+    *ngIf="showForm"
+    [coupon]="selectedCoupon"
+    [isAdmin]="true"
+    (saved)="onCouponSaved()"
+    (cancelled)="closeForm()">
+  </app-coupon-form>
+</div>

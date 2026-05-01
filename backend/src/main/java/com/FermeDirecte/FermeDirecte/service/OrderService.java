@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.time.Year;
 import java.util.List;
 import java.util.Random;
@@ -105,19 +106,71 @@ public class OrderService {
         BigDecimal remise = BigDecimal.ZERO;
 
         if (request.getCodeCoupon() != null && !request.getCodeCoupon().isBlank()) {
-            coupon = couponRepository.findByCodeAndActifTrue(request.getCodeCoupon())
+            coupon = couponRepository.findByCodeIgnoreCase(request.getCodeCoupon())
                     .orElseThrow(() -> new BadRequestException("Coupon invalide"));
 
-            switch (coupon.getType()) {
-                case PERCENT -> remise = sousTotal.multiply(coupon.getValeur())
-                        .divide(BigDecimal.valueOf(100));
-                case FIXED -> remise = coupon.getValeur();
+            // Vérifier que le coupon est actif et non bloqué
+            if (!coupon.getActif() || coupon.getBloque()) {
+                throw new BadRequestException("Ce coupon n'est pas disponible");
             }
 
+            // Vérifier la date de validité
+            LocalDateTime now = LocalDateTime.now();
+            if (now.isBefore(coupon.getDateDebut()) || now.isAfter(coupon.getDateExpiration())) {
+                throw new BadRequestException("Ce coupon n'est plus valide");
+            }
+
+            // Vérifier le montant minimum
+            if (coupon.getMontantMinimum() != null && sousTotal.compareTo(coupon.getMontantMinimum()) < 0) {
+                throw new BadRequestException("Montant minimum de " + coupon.getMontantMinimum() + " DT requis");
+            }
+
+            // Vérifier les usages
+            if (coupon.getUsagesActuels() >= coupon.getUsagesMaxGlobal()) {
+                throw new BadRequestException("Ce coupon a atteint sa limite d'utilisation");
+            }
+
+            // Calculer la réduction (ordre : % -> fixe)
+            BigDecimal montantApresReduction = sousTotal;
+
+            // 1. Réduction en pourcentage
+            if (coupon.getPourcentageReduction() != null && coupon.getPourcentageReduction().compareTo(BigDecimal.ZERO) > 0) {
+                BigDecimal reductionPourcentage = sousTotal
+                    .multiply(coupon.getPourcentageReduction())
+                    .divide(BigDecimal.valueOf(100), 2, java.math.RoundingMode.HALF_UP);
+                remise = remise.add(reductionPourcentage);
+                montantApresReduction = montantApresReduction.subtract(reductionPourcentage);
+            }
+
+            // 2. Réduction montant fixe
+            if (coupon.getMontantFixeReduction() != null && coupon.getMontantFixeReduction().compareTo(BigDecimal.ZERO) > 0) {
+                remise = remise.add(coupon.getMontantFixeReduction());
+                montantApresReduction = montantApresReduction.subtract(coupon.getMontantFixeReduction());
+            }
+
+            // Appliquer le plafond de réduction si défini
+            if (coupon.getMontantMaximumReduction() != null && remise.compareTo(coupon.getMontantMaximumReduction()) > 0) {
+                remise = coupon.getMontantMaximumReduction();
+            }
+
+            // Ne pas descendre en dessous de 0
+            if (montantApresReduction.compareTo(BigDecimal.ZERO) < 0) {
+                remise = sousTotal;
+            }
+
+            // Incrémenter le compteur d'utilisations
             coupon.setUsagesActuels(coupon.getUsagesActuels() + 1);
+            // Sauvegarder le coupon AVANT de l'associer à la commande
+            coupon = couponRepository.save(coupon);
         }
 
         BigDecimal fraisLivraison = BigDecimal.valueOf(5.0);
+        
+        // Appliquer la livraison gratuite si le coupon le permet
+        if (coupon != null && coupon.getLivraisonGratuite()) {
+            fraisLivraison = BigDecimal.ZERO;
+        }
+        
         BigDecimal totalTTC = sousTotal.subtract(remise).add(fraisLivraison);
 
         // Créer commande
@@ -130,6 +183,7 @@ public class OrderService {
                 .statut(OrderStatus.PENDING)
                 .statutPaiement(PaymentStatus.PENDING)
                 .sousTotal(sousTotal)
+                .remise(remise)  // Sauvegarder la remise
                 .fraisLivraison(fraisLivraison)
                 .totalTTC(totalTTC)
                 .build();
@@ -319,6 +373,7 @@ public class OrderService {
                 .statutPaiement(o.getStatutPaiement())
                 .lignes(lignes)
                 .sousTotal(o.getSousTotal())
+                .remise(o.getRemise())
                 .fraisLivraison(o.getFraisLivraison())
                 .totalTTC(o.getTotalTTC())
                 .dateCommande(o.getDateCommande())

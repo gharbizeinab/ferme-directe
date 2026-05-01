@@ -5,7 +5,9 @@ import { MatStepper } from '@angular/material/stepper';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { OrderService } from '../../services/order.service';
 import { CartService } from '../../services/cart.service';
+import { CouponService } from '../../services/coupon.service';
 import { Address, Cart } from '../../models';
+import { CouponValidation } from '../../models/coupon.model';
 
 @Component({
   selector: 'app-checkout',
@@ -25,6 +27,12 @@ export class CheckoutComponent implements OnInit {
   savedAddresses: Address[] = [];
   selectedAddress: Address | null = null;
 
+  // Coupon
+  couponCode: string = '';
+  appliedCoupon: CouponValidation | null = null;
+  couponError: string = '';
+  isValidatingCoupon: boolean = false;
+
   // États de chargement et de soumission
   isPlacing: boolean = false;
   isPlacingOrder: boolean = false;
@@ -37,6 +45,7 @@ export class CheckoutComponent implements OnInit {
   constructor(
     private orderService: OrderService,
     private cartService: CartService,
+    private couponService: CouponService,
     private router: Router,
     private snackBar: MatSnackBar
   ) {}
@@ -114,7 +123,8 @@ export class CheckoutComponent implements OnInit {
     this.orderService.createOrder({
       adresse: this.addressForm.value,
       modePaiement: this.paymentForm.value.modePaiement,
-      notes: this.paymentForm.value.notes
+      notes: this.paymentForm.value.notes,
+      codeCoupon: this.appliedCoupon?.codeApplique || undefined
     }).subscribe({
       next: (order) => {
         this.isPlacing = false;
@@ -132,6 +142,61 @@ export class CheckoutComponent implements OnInit {
         this.snackBar.open(this.checkoutError, 'Fermer', { duration: 3000 });
       }
     });
+  }
+
+  // Validation du coupon
+  applyCoupon(): void {
+    if (!this.couponCode || this.couponCode.trim() === '') {
+      this.couponError = 'Veuillez entrer un code coupon';
+      return;
+    }
+
+    if (!this.cart) {
+      this.couponError = 'Panier non chargé';
+      return;
+    }
+
+    this.isValidatingCoupon = true;
+    this.couponError = '';
+
+    // Pour l'instant, on envoie un tableau vide pour les catégories
+    // car CartLine ne contient pas les informations de catégorie
+    const categoryIds: number[] = [];
+
+    this.couponService.validateCoupon(
+      this.couponCode.toUpperCase(),
+      this.cart.sousTotal || 0,
+      5.0,  // Frais de livraison par défaut
+      categoryIds
+    ).subscribe({
+      next: (validation) => {
+        this.isValidatingCoupon = false;
+        if (validation.valide) {
+          this.appliedCoupon = validation;
+          this.couponError = '';
+          this.snackBar.open('Coupon appliqué avec succès !', 'Fermer', { duration: 3000 });
+        } else {
+          this.couponError = validation.message;
+          this.appliedCoupon = null;
+          this.snackBar.open(validation.message, 'Fermer', { duration: 3000 });
+        }
+      },
+      error: (err) => {
+        this.isValidatingCoupon = false;
+        console.error('Erreur validation coupon:', err);
+        this.couponError = err.error?.message || err.message || 'Erreur lors de la validation du coupon';
+        this.appliedCoupon = null;
+        this.snackBar.open(this.couponError, 'Fermer', { duration: 3000 });
+      }
+    });
+  }
+
+  // Retirer le coupon
+  removeCoupon(): void {
+    this.appliedCoupon = null;
+    this.couponCode = '';
+    this.couponError = '';
+    this.snackBar.open('Coupon retiré', 'Fermer', { duration: 2000 });
   }
 
   // Récupération de l'adresse de livraison
@@ -164,10 +229,35 @@ export class CheckoutComponent implements OnInit {
 
   // Getters pour le template
   get cartTotal(): number {
-    return this.cart?.total ?? 0;
+    // Si un coupon est appliqué, utiliser le total après coupon
+    if (this.appliedCoupon) {
+      return this.appliedCoupon.totalApresCoupon ?? 0;
+    }
+    // Sinon, calculer : sous-total + frais de livraison
+    const subtotal = this.cart?.sousTotal ?? 0;
+    const delivery = this.cartDeliveryFee;
+    return subtotal + delivery;
+  }
+
+  get cartSubtotal(): number {
+    return this.cart?.sousTotal ?? 0;
+  }
+
+  get cartDeliveryFee(): number {
+    // Si un coupon est appliqué
+    if (this.appliedCoupon) {
+      // Utiliser les frais de livraison retournés par la validation du coupon
+      return this.appliedCoupon.fraisLivraison ?? 5.0;
+    }
+    // Sinon, frais de livraison par défaut : 5 DT
+    return 5.0;
   }
 
   get cartLines(): number {
     return this.cart?.lignes?.length ?? 0;
+  }
+
+  get totalDiscount(): number {
+    return this.appliedCoupon?.reductionTotale ?? 0;
   }
 }

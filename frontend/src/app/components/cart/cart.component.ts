@@ -39,9 +39,9 @@ export class CartComponent implements OnInit {
     this.cartService.getCart().subscribe({
       next: (cart) => {
         this.cart = cart;
-        this.couponApplied = !!cart.couponCode;
-        if (cart.couponCode) {
-          this.couponCode = cart.couponCode;
+        this.couponApplied = !!cart.codeCoupon;
+        if (cart.codeCoupon) {
+          this.couponCode = cart.codeCoupon;
         }
         this.isLoading = false;
       },

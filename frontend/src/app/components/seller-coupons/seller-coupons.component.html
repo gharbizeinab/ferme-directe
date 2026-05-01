@@ -1,0 +1,178 @@
+<!-- src/app/components/seller-coupons/seller-coupons.component.html -->
+<div class="seller-coupons-container">
+  <div class="header">
+    <h1>Mes Coupons</h1>
+    <button class="btn btn-primary" (click)="openCreateForm()">
+      <i class="fas fa-plus"></i> Créer un coupon
+    </button>
+  </div>
+
+  <!-- Filtre de tri -->
+  <div class="filters-section">
+    <div class="filter-group">
+      <label>Tri par date</label>
+      <select [(ngModel)]="sortOrder" (ngModelChange)="applySorting()" class="form-control">
+        <option value="DESC">Plus récent d'abord</option>
+        <option value="ASC">Plus ancien d'abord</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading">
+    <i class="fas fa-spinner fa-spin"></i> Chargement...
+  </div>
+
+  <!-- Liste des coupons -->
+  <div *ngIf="!loading" class="coupons-grid">
+    <div *ngFor="let coupon of filteredCoupons" class="coupon-card">
+      <div class="coupon-header">
+        <div class="coupon-code">{{ coupon.code }}</div>
+        <span class="coupon-badge" [ngClass]="getStatusClass(coupon)">
+          {{ getStatusText(coupon) }}
+        </span>
+      </div>
+
+      <div class="coupon-body">
+        <p class="coupon-description">{{ coupon.description }}</p>
+        
+        <div class="coupon-reduction">
+          <i class="fas fa-tag"></i>
+          <strong>{{ getReductionText(coupon) }}</strong>
+        </div>
+
+        <div class="coupon-details">
+          <div class="detail-item" *ngIf="coupon.montantMinimum">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Minimum: {{ coupon.montantMinimum }} DT</span>
+          </div>
+
+          <div class="detail-item">
+            <i class="fas fa-users"></i>
+            <span>{{ coupon.usagesActuels }} / {{ coupon.usagesMaxGlobal }} utilisations</span>
+          </div>
+
+          <div class="detail-item">
+            <i class="fas fa-user-check"></i>
+            <span>Max {{ coupon.usagesMaxParUtilisateur }} fois/utilisateur</span>
+          </div>
+
+          <div class="detail-item">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Du {{ formatDate(coupon.dateDebut) }} au {{ formatDate(coupon.dateExpiration) }}</span>
+          </div>
+
+          <div class="detail-item" *ngIf="coupon.montantTotalEconomise">
+            <i class="fas fa-coins"></i>
+            <span>{{ coupon.montantTotalEconomise }} DT économisés par vos clients</span>
+          </div>
+        </div>
+
+        <div class="progress-section">
+          <div class="progress-label">
+            <span>Utilisation</span>
+            <span>{{ getUsagePercentage(coupon).toFixed(0) }}%</span>
+          </div>
+          <div class="progress-bar">
+            <div 
+              class="progress-fill" 
+              [style.width.%]="getUsagePercentage(coupon)">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="coupon-actions">
+        <button 
+          class="btn btn-sm btn-info" 
+          (click)="openEditForm(coupon)">
+          <i class="fas fa-edit"></i> Modifier
+        </button>
+
+        <button 
+          class="btn btn-sm" 
+          [ngClass]="coupon.actif ? 'btn-warning' : 'btn-success'"
+          (click)="toggleStatus(coupon.id)">
+          <i [class]="coupon.actif ? 'fas fa-pause' : 'fas fa-play'"></i>
+          {{ coupon.actif ? 'Désactiver' : 'Activer' }}
+        </button>
+
+        <button 
+          class="btn btn-sm btn-secondary" 
+          (click)="viewStats(coupon.id)">
+          <i class="fas fa-chart-bar"></i> Stats
+        </button>
+
+        <button 
+          class="btn btn-sm btn-danger" 
+          (click)="deleteCoupon(coupon.id)"
+          [disabled]="coupon.usagesActuels > 0">
+          <i class="fas fa-trash"></i> Supprimer
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="coupons.length === 0" class="no-coupons">
+      <i class="fas fa-ticket-alt"></i>
+      <p>Vous n'avez pas encore créé de coupons</p>
+      <button class="btn btn-primary" (click)="openCreateForm()">
+        Créer mon premier coupon
+      </button>
+    </div>
+  </div>
+
+  <!-- Formulaire modal -->
+  <app-coupon-form
+    *ngIf="showForm"
+    [coupon]="selectedCoupon"
+    [isAdmin]="false"
+    (saved)="onCouponSaved()"
+    (cancelled)="closeForm()">
+  </app-coupon-form>
+
+  <!-- Modal statistiques -->
+  <div *ngIf="showStatsModal" class="modal-overlay" (click)="closeStatsModal()">
+    <div class="modal-content stats-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Statistiques du coupon</h2>
+        <button class="close-btn" (click)="closeStatsModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="modal-body" *ngIf="selectedCouponStats">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <i class="fas fa-ticket-alt"></i>
+            <div class="stat-value">{{ selectedCouponStats?.code }}</div>
+            <div class="stat-label">Code</div>
+          </div>
+
+          <div class="stat-card">
+            <i class="fas fa-users"></i>
+            <div class="stat-value">{{ selectedCouponStats?.nombreUtilisations }}</div>
+            <div class="stat-label">Utilisations</div>
+          </div>
+
+          <div class="stat-card">
+            <i class="fas fa-user-friends"></i>
+            <div class="stat-value">{{ selectedCouponStats?.nombreUtilisateursUniques }}</div>
+            <div class="stat-label">Utilisateurs uniques</div>
+          </div>
+
+          <div class="stat-card">
+            <i class="fas fa-coins"></i>
+            <div class="stat-value">{{ selectedCouponStats?.montantTotalEconomise }} DT</div>
+            <div class="stat-label">Total économisé</div>
+          </div>
+
+          <div class="stat-card">
+            <i class="fas fa-percentage"></i>
+            <div class="stat-value">{{ selectedCouponStats?.tauxUtilisation ? selectedCouponStats.tauxUtilisation.toFixed(1) : '0.0' }}%</div>
+            <div class="stat-label">Taux d'utilisation</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

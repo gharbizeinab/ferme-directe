@@ -1,0 +1,207 @@
+==============================================
+COMMANDES POUR LA BASE DE DONNÉES - COUPONS
+==============================================
+
+📋 OPTION 1 : Ligne de commande (Recommandé)
+==============================================
+
+1. Ouvrir un terminal/PowerShell
+
+2. Naviguer vers le dossier SQL :
+   cd ferme-directe-complete/backend/sql
+
+3. Exécuter la migration :
+   psql -U postgres -d ferme_directe -f COUPON_MIGRATION_SIMPLE.sql
+
+   OU si vous avez un autre utilisateur :
+   psql -U votre_user -d ferme_directe -f COUPON_MIGRATION_SIMPLE.sql
+
+4. Vérifier le message de succès :
+   "Migration des coupons hybrides terminée avec succès!"
+
+
+==============================================
+📋 OPTION 2 : pgAdmin (Interface graphique)
+==============================================
+
+1. Ouvrir pgAdmin
+
+2. Se connecter à votre serveur PostgreSQL
+
+3. Sélectionner la base de données "ferme_directe"
+
+4. Cliquer sur "Query Tool" (Outil de requête)
+
+5. Ouvrir le fichier :
+   ferme-directe-complete/backend/sql/COUPON_MIGRATION_SIMPLE.sql
+
+6. Cliquer sur "Execute" (F5)
+
+7. Vérifier les messages dans l'onglet "Messages"
+
+
+==============================================
+📋 OPTION 3 : DBeaver
+==============================================
+
+1. Ouvrir DBeaver
+
+2. Se connecter à votre base de données "ferme_directe"
+
+3. Clic droit sur la base → SQL Editor → Open SQL Script
+
+4. Sélectionner le fichier :
+   ferme-directe-complete/backend/sql/COUPON_MIGRATION_SIMPLE.sql
+
+5. Cliquer sur "Execute SQL Script" (Ctrl+Alt+X)
+
+6. Vérifier les résultats
+
+
+==============================================
+📋 VÉRIFICATIONS APRÈS MIGRATION
+==============================================
+
+1. Vérifier que les tables sont créées :
+   SELECT table_name 
+   FROM information_schema.tables 
+   WHERE table_name IN ('coupons', 'coupon_usages', 'coupon_categories');
+
+   Résultat attendu : 3 lignes
+
+2. Vérifier les coupons de test :
+   SELECT code, description, actif FROM coupons;
+
+   Résultat attendu : 5 coupons
+
+3. Vérifier la vue :
+   SELECT * FROM v_coupon_stats;
+
+   Résultat attendu : 5 lignes avec statistiques
+
+4. Tester la fonction :
+   SELECT can_user_use_coupon(1, 1);
+
+   Résultat attendu : TRUE ou FALSE
+
+
+==============================================
+📋 REQUÊTES UTILES APRÈS MIGRATION
+==============================================
+
+-- Voir tous les coupons
+SELECT * FROM coupons;
+
+-- Voir les coupons valides
+SELECT code, description, date_expiration 
+FROM coupons 
+WHERE actif = TRUE 
+  AND bloque = FALSE 
+  AND date_debut <= CURRENT_TIMESTAMP 
+  AND date_expiration > CURRENT_TIMESTAMP;
+
+-- Voir les statistiques
+SELECT * FROM v_coupon_stats;
+
+-- Compter les coupons par type
+SELECT 
+    CASE 
+        WHEN pourcentage_reduction IS NOT NULL AND montant_fixe_reduction IS NOT NULL AND livraison_gratuite = TRUE 
+            THEN 'Hybride complet'
+        WHEN pourcentage_reduction IS NOT NULL 
+            THEN 'Pourcentage seul'
+        WHEN montant_fixe_reduction IS NOT NULL 
+            THEN 'Fixe seul'
+        WHEN livraison_gratuite = TRUE 
+            THEN 'Livraison seule'
+    END as type,
+    COUNT(*) as nombre
+FROM coupons
+GROUP BY type;
+
+
+==============================================
+📋 EN CAS DE PROBLÈME
+==============================================
+
+PROBLÈME : "relation users does not exist"
+SOLUTION : La table users doit exister avant. Vérifier que votre base de données est bien initialisée.
+
+PROBLÈME : "relation orders does not exist"
+SOLUTION : La table orders doit exister avant. Vérifier que votre base de données est bien initialisée.
+
+PROBLÈME : "permission denied"
+SOLUTION : Utiliser un utilisateur avec les droits CREATE TABLE.
+   Exemple : psql -U postgres -d ferme_directe -f COUPON_MIGRATION_SIMPLE.sql
+
+PROBLÈME : "database ferme_directe does not exist"
+SOLUTION : Créer la base de données d'abord :
+   CREATE DATABASE ferme_directe;
+
+
+==============================================
+📋 COMMANDES DE NETTOYAGE (SI BESOIN)
+==============================================
+
+-- Supprimer toutes les données de test
+DELETE FROM coupon_usages;
+DELETE FROM coupon_categories;
+DELETE FROM coupons;
+
+-- Supprimer complètement les tables
+DROP TABLE IF EXISTS coupon_usages CASCADE;
+DROP TABLE IF EXISTS coupon_categories CASCADE;
+DROP TABLE IF EXISTS coupons CASCADE;
+
+-- Puis réexécuter la migration
+
+
+==============================================
+📋 INFORMATIONS IMPORTANTES
+==============================================
+
+✅ Le fichier COUPON_MIGRATION_SIMPLE.sql contient :
+   - Création de 3 tables (coupons, coupon_categories, coupon_usages)
+   - 8 index pour les performances
+   - 1 vue pour les statistiques
+   - 1 fonction pour vérifier l'utilisation
+   - 5 coupons de test
+
+✅ Temps d'exécution : ~2 secondes
+
+✅ Aucune donnée existante n'est supprimée (sauf les anciennes tables de coupons si elles existent)
+
+✅ Les coupons de test sont créés automatiquement :
+   - BIENVENUE2024 : Hybride complet (-20% + -5 DT + livraison)
+   - PROMO15 : -15%
+   - REDUC10 : -10 DT
+   - LIVRAISONGRATUITE : Livraison offerte
+   - MEGA50 : -50% (max 30 DT)
+
+
+==============================================
+📋 APRÈS LA MIGRATION
+==============================================
+
+1. Redémarrer le backend Spring Boot
+   cd ferme-directe-complete/backend
+   mvn spring-boot:run
+
+2. Vérifier les logs :
+   Vous devriez voir : "Hibernate: ..." pour les tables coupons
+
+3. Tester l'API :
+   GET http://localhost:8080/api/coupons/admin/all
+   (Nécessite un token admin)
+
+
+==============================================
+✅ SUCCÈS !
+==============================================
+
+Si vous voyez le message :
+"Migration des coupons hybrides terminée avec succès!"
+
+Et une liste de 5 coupons, c'est bon ! ✅
+
+Vous pouvez maintenant passer à l'intégration frontend.
