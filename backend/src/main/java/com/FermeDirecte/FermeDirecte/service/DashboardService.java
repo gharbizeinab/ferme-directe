@@ -134,7 +134,69 @@ public class DashboardService {
                 .topProduits(topProduits)
                 .commandesRecentes(commandesRecentes)
                 .produitsRecents(produitsRecents)
+                .revenusParMois(calculerRevenusParMois(commandes))
+                .commandesParStatut(calculerCommandesParStatut(commandes))
+                .utilisateursParRole(calculerUtilisateursParRole())
                 .build();
+    }
+
+    private List<Map<String, Object>> calculerRevenusParMois(List<Order> commandes) {
+        List<Map<String, Object>> revenusParMois = new ArrayList<>();
+        java.time.LocalDate maintenant = java.time.LocalDate.now();
+        
+        for (int i = 11; i >= 0; i--) {
+            java.time.YearMonth mois = java.time.YearMonth.from(maintenant.minusMonths(i));
+            java.time.LocalDate debutMois = mois.atDay(1);
+            java.time.LocalDate finMois = mois.atEndOfMonth();
+            
+            BigDecimal revenuMois = commandes.stream()
+                    .filter(o -> o.getStatut() != OrderStatus.CANCELLED)
+                    .filter(o -> o.getDateCommande() != null)
+                    .filter(o -> {
+                        java.time.LocalDate dateCmd = o.getDateCommande().toLocalDate();
+                        return !dateCmd.isBefore(debutMois) && !dateCmd.isAfter(finMois);
+                    })
+                    .map(Order::getTotalTTC)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            
+            Map<String, Object> moisData = new HashMap<>();
+            moisData.put("mois", mois.getMonth().toString());
+            moisData.put("annee", mois.getYear());
+            moisData.put("revenu", revenuMois);
+            revenusParMois.add(moisData);
+        }
+        
+        return revenusParMois;
+    }
+
+    private Map<String, Long> calculerCommandesParStatut(List<Order> commandes) {
+        Map<String, Long> commandesParStatut = new HashMap<>();
+        commandesParStatut.put("EN_ATTENTE", commandes.stream()
+                .filter(o -> o.getStatut() == OrderStatus.PENDING).count());
+        commandesParStatut.put("EN_COURS", commandes.stream()
+                .filter(o -> o.getStatut() == OrderStatus.PAID || o.getStatut() == OrderStatus.PROCESSING).count());
+        commandesParStatut.put("LIVRE", commandes.stream()
+                .filter(o -> o.getStatut() == OrderStatus.DELIVERED).count());
+        commandesParStatut.put("ANNULE", commandes.stream()
+                .filter(o -> o.getStatut() == OrderStatus.CANCELLED).count());
+        return commandesParStatut;
+    }
+
+    private Map<String, Long> calculerUtilisateursParRole() {
+        Map<String, Long> utilisateursParRole = new HashMap<>();
+        List<com.FermeDirecte.FermeDirecte.entity.User> users = userRepository.findAll();
+        
+        utilisateursParRole.put("CUSTOMER", users.stream()
+                .filter(u -> u.getRole() == com.FermeDirecte.FermeDirecte.enums.Role.CUSTOMER)
+                .count());
+        utilisateursParRole.put("SELLER", users.stream()
+                .filter(u -> u.getRole() == com.FermeDirecte.FermeDirecte.enums.Role.SELLER)
+                .count());
+        utilisateursParRole.put("ADMIN", users.stream()
+                .filter(u -> u.getRole() == com.FermeDirecte.FermeDirecte.enums.Role.ADMIN)
+                .count());
+        
+        return utilisateursParRole;
     }
 
     private double calculerCroissance(long valeurPrecedente, long valeurActuelle) {
@@ -299,6 +361,40 @@ public class DashboardService {
             revenusParJour.add(jour);
         }
 
+        // Top 5 produits du vendeur (les plus vendus)
+        Map<Long, Map<String, Object>> produitsVendus = new HashMap<>();
+        
+        orderRepository.findAll().stream()
+                .filter(o -> o.getStatut() != OrderStatus.CANCELLED)
+                .flatMap(o -> o.getLignes().stream())
+                .filter(item -> item.getProduit()
+                        .getSellerProfile()
+                        .getId()
+                        .equals(profile.getId()))
+                .forEach(item -> {
+                    Long productId = item.getProduit().getId();
+                    produitsVendus.putIfAbsent(productId, new HashMap<>());
+                    Map<String, Object> produitData = produitsVendus.get(productId);
+                    
+                    produitData.put("nomProduit", item.getProduit().getNom());
+                    
+                    int quantite = (int) produitData.getOrDefault("quantiteVendue", 0);
+                    produitData.put("quantiteVendue", quantite + item.getQuantite());
+                    
+                    BigDecimal ca_produit = (BigDecimal) produitData.getOrDefault("chiffreAffaires", BigDecimal.ZERO);
+                    produitData.put("chiffreAffaires", 
+                        ca_produit.add(item.getPrixUnitaire().multiply(BigDecimal.valueOf(item.getQuantite()))));
+                });
+
+        List<Map<String, Object>> topProduits = produitsVendus.values().stream()
+                .sorted((p1, p2) -> {
+                    int q1 = (int) p1.get("quantiteVendue");
+                    int q2 = (int) p2.get("quantiteVendue");
+                    return Integer.compare(q2, q1);
+                })
+                .limit(5)
+                .collect(Collectors.toList());
+
         return SellerDashboardResponse.builder()
                 .totalProduits(totalProduits)
                 .commandesEnAttente(commandesEnAttente)
@@ -308,6 +404,7 @@ public class DashboardService {
                 .commandesRecentes(commandesRecentes != null ? commandesRecentes : new ArrayList<>())
                 .revenusParJour(revenusParJour != null ? revenusParJour : new ArrayList<>())
                 .statistiquesCommandes(statistiquesCommandes != null ? statistiquesCommandes : new HashMap<>())
+                .topProduits(topProduits != null ? topProduits : new ArrayList<>())
                 .build();
     }
 }

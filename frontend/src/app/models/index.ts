@@ -220,6 +220,11 @@ export interface AdminDashboard {
   produitsRecents?: any[];
   ventesParCategorie?: { categorie: string; total: number }[];
   topProduits?: any[];
+  
+  // Données pour les graphiques
+  revenusParMois?: Array<{ mois: string; annee: number; revenu: number }>;
+  commandesParStatut?: { EN_ATTENTE: number; EN_COURS: number; LIVRE: number; ANNULE: number };
+  utilisateursParRole?: { CUSTOMER: number; SELLER: number; ADMIN: number };
 }
 
 export interface SellerDashboard {
@@ -238,6 +243,7 @@ export interface SellerDashboard {
     livrees: number;
     annulees: number;
   };
+  topProduits?: Array<{ nomProduit: string; quantiteVendue: number; chiffreAffaires: number }>;
 }
 
 // --- Coupon ---

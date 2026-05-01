@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aperçu Navigation Rapide - Dashboard</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-primary: #4CAF50;
+            --color-primary-dark: #388E3C;
+            --color-text-primary: #212121;
+            --color-text-secondary: #757575;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            color: var(--color-text-primary);
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: var(--color-text-secondary);
+            font-size: 16px;
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin-bottom: var(--spacing-lg);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title .material-icons {
+            color: var(--color-primary);
+            font-size: 28px;
+        }
+
+        .quick-access-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: var(--spacing-md);
+        }
+
+        .quick-access-card {
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border: 1px solid #e0e0e0;
+            text-decoration: none;
+        }
+
+        .quick-access-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--color-primary);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .quick-access-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            border-color: var(--color-primary);
+        }
+
+        .quick-access-card:hover::before {
+            transform: scaleY(1);
+        }
+
+        .quick-access-card:hover .quick-access-icon {
+            background: var(--color-primary);
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .quick-access-card:hover .quick-access-icon .material-icons {
+            color: white;
+        }
+
+        .quick-access-card:hover .quick-access-arrow {
+            transform: translateX(5px);
+            color: var(--color-primary);
+        }
+
+        .quick-access-card:hover h3 {
+            color: var(--color-primary);
+        }
+
+        .quick-access-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        .quick-access-icon .material-icons {
+            font-size: 28px;
+            color: var(--color-primary);
+            transition: color 0.3s ease;
+        }
+
+        .quick-access-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .quick-access-content h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin: 0 0 4px 0;
+            transition: color 0.3s ease;
+        }
+
+        .quick-access-content p {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .quick-access-arrow {
+            font-size: 24px;
+            color: var(--color-text-secondary);
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-left: 8px;
+        }
+
+        .badge-admin {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .badge-seller {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .info-box {
+            background: #e8f5e9;
+            border-left: 4px solid var(--color-primary);
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+
+        .info-box h4 {
+            color: var(--color-primary-dark);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-box ul {
+            margin-left: 20px;
+            color: var(--color-text-primary);
+        }
+
+        .info-box li {
+            margin-bottom: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .quick-access-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            }
+        }
+
+        @media (max-width: 480px) {
+            .quick-access-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Navigation Rapide - Dashboard</h1>
+            <p>Aperçu des cartes de navigation avec effets hover</p>
+        </div>
+
+        <!-- Dashboard Admin -->
+        <div class="section">
+            <div class="section-title">
+                <span class="material-icons">apps</span>
+                Accès Rapide - Admin
+                <span class="badge badge-admin">Administrateur</span>
+            </div>
+            <div class="quick-access-grid">
+                <div class="quick-access-card">
+                    <div class="quick-access-icon">
+                        <span class="material-icons">receipt_long</span>
+                    </div>
+                    <div class="quick-access-content">
+                        <h3>Commandes</h3>
+                        <p>Gérer toutes les commandes</p>
+                    </div>
+                    <span class="material-icons quick-access-arrow">arrow_forward</span>
+                </div>
+
+                <div class="quick-access-card">
+                    <div class="quick-access-icon">
+                        <span class="material-icons">people</span>
+                    </div>
+                    <div class="quick-access-content">
+                        <h3>Utilisateurs</h3>
+                        <p>Gérer les utilisateurs</p>
+                    </div>
+                    <span class="material-icons quick-access-arrow">arrow_forward</span>
+                </div>
+
+                <div class="quick-access-card">
+                    <div class="quick-access-icon">
+                        <span class="material-icons">category</span>
+                    </div>
+                    <div class="quick-access-content">
+                        <h3>Catégories</h3>
+                        <p>Gérer les catégories</p>
+                    </div>
+                    <span class="material-icons quick-access-arrow">arrow_forward</span>
+                </div>
+
+                <div class="quick-access-card">
+                    <div class="quick-access-icon">
+                        <span class="material-icons">local_offer</span>
+                    </div>
+                    <div class="quick-access-content">
+                        <h3>Coupons</h3>
+                        <p>Gérer les coupons</p>
+                    </div>
+                    <span class="material-icons quick-access-arrow">arrow_forward</span>
+                </div>
+
+                <div class="quick-access-card">
+                    <div class="quick-access-icon">
+                        <span class="material-icons">inventory_2</span>
+                    </div>
+                    <div class="quick-access-content">
+                        <h3>Produits</h3>
+                        <p>Voir tous les produits</p>
+                    </div>
+                    <span class="material-icons quick-access-arrow">arrow_forward</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Vendeur -->
+        <div class="section">
+            <div class="section-title">
+                <span class="material-icons">apps</span>
+                Accès Rapide - Vendeur
+                <span class="badge badge-seller">Vendeur</span>
+            </div>
+            <div class="quick-access-grid">
+                <div class="quick-access-card">
+                    <div class="quick-access-icon">
+                        <span class="material-icons">inventory</span>
+                    </div>
+                    <div class="quick-access-content">
+                        <h3>Mes Produits</h3>
+                        <p>Gérer mes produits</p>
+                    </div>
+                    <span class="material-icons quick-access-arrow">arrow_forward</span>
+                </div>
+
+                <div class="quick-access-card">
+                    <div class="quick-access-icon">
+                        <span class="material-icons">receipt_long</span>
+                    </div>
+                    <div class="quick-access-content">
+                        <h3>Mes Commandes</h3>
+                        <p>Voir mes commandes</p>
+                    </div>
+                    <span class="material-icons quick-access-arrow">arrow_forward</span>
+                </div>
+
+                <div class="quick-access-card">
+                    <div class="quick-access-icon">
+                        <span class="material-icons">local_offer</span>
+                    </div>
+                    <div class="quick-access-content">
+                        <h3>Mes Coupons</h3>
+                        <p>Gérer mes coupons</p>
+                    </div>
+                    <span class="material-icons quick-access-arrow">arrow_forward</span>
+                </div>
+
+                <div class="quick-access-card">
+                    <div class="quick-access-icon">
+                        <span class="material-icons">storefront</span>
+                    </div>
+                    <div class="quick-access-content">
+                        <h3>Boutique</h3>
+                        <p>Voir tous les produits</p>
+                    </div>
+                    <span class="material-icons quick-access-arrow">arrow_forward</span>
+                </div>
+
+                <div class="quick-access-card">
+                    <div class="quick-access-icon">
+                        <span class="material-icons">person</span>
+                    </div>
+                    <div class="quick-access-content">
+                        <h3>Mon Profil</h3>
+                        <p>Modifier mes informations</p>
+                    </div>
+                    <span class="material-icons quick-access-arrow">arrow_forward</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Box -->
+        <div class="info-box">
+            <h4>
+                <span class="material-icons">info</span>
+                Effets Interactifs
+            </h4>
+            <ul>
+                <li>✨ <strong>Survolez</strong> une carte pour voir les animations</li>
+                <li>🎨 L'icône change de couleur et tourne légèrement</li>
+                <li>➡️ La flèche se déplace vers la droite</li>
+                <li>📊 Une barre verte apparaît à gauche</li>
+                <li>⬆️ La carte s'élève avec une ombre</li>
+                <li>📱 Design responsive pour mobile et tablette</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

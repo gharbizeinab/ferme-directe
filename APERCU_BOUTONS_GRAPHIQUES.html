@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aperçu Boutons Navigation Graphiques</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-primary: #4CAF50;
+            --spacing-md: 16px;
+            --radius-md: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .header h1 {
+            font-size: 32px;
+            color: #212121;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #757575;
+            font-size: 16px;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .chart-header .material-icons {
+            color: var(--color-primary);
+            font-size: 28px;
+        }
+
+        .chart-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #212121;
+        }
+
+        .chart-subtitle {
+            font-size: 14px;
+            color: #757575;
+            margin-bottom: 20px;
+        }
+
+        .chart-placeholder {
+            height: 200px;
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-primary);
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 16px;
+        }
+
+        .chart-action {
+            margin-top: var(--spacing-md);
+            padding-top: var(--spacing-md);
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .chart-link-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            transition: all 0.3s ease;
+            background: transparent;
+            border: none;
+            color: var(--color-primary);
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .chart-link-btn span {
+            transition: transform 0.3s ease;
+        }
+
+        .chart-link-btn .material-icons {
+            font-size: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .chart-link-btn:hover {
+            background: rgba(76, 175, 80, 0.08);
+        }
+
+        .chart-link-btn:hover span {
+            transform: translateX(-2px);
+        }
+
+        .chart-link-btn:hover .material-icons {
+            transform: translateX(4px);
+        }
+
+        .chart-link-btn:active {
+            transform: scale(0.98);
+        }
+
+        .section-title {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title h2 {
+            font-size: 24px;
+            color: #212121;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title .material-icons {
+            color: var(--color-primary);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-left: 12px;
+        }
+
+        .badge-admin {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .badge-seller {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .info-box {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+        }
+
+        .info-box h4 {
+            color: var(--color-primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 18px;
+        }
+
+        .info-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .info-list li {
+            padding: 8px 0;
+            color: #212121;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-list li::before {
+            content: '✓';
+            color: var(--color-primary);
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-action {
+                justify-content: center;
+            }
+
+            .chart-link-btn {
+                font-size: 13px;
+                padding: 6px 12px;
+            }
+
+            .chart-link-btn .material-icons {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Boutons de Navigation dans les Graphiques</h1>
+            <p>Aperçu des boutons avec flèches pour navigation rapide</p>
+        </div>
+
+        <!-- Dashboard Admin -->
+        <div class="section-title">
+            <h2>
+                <span class="material-icons">admin_panel_settings</span>
+                Dashboard Administrateur
+                <span class="badge badge-admin">Admin</span>
+            </h2>
+        </div>
+
+        <div class="charts-grid">
+            <!-- Graphique 1 -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <span class="material-icons">show_chart</span>
+                    <h3>Évolution du CA</h3>
+                </div>
+                <div class="chart-subtitle">Revenus mensuels de l'année</div>
+                <div class="chart-placeholder">
+                    📈 Graphique Line Chart
+                </div>
+                <div class="chart-action">
+                    <button class="chart-link-btn">
+                        <span>Voir les détails</span>
+                        <span class="material-icons">arrow_forward</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Graphique 2 -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <span class="material-icons">bar_chart</span>
+                    <h3>Commandes par Statut</h3>
+                </div>
+                <div class="chart-subtitle">Répartition des commandes</div>
+                <div class="chart-placeholder">
+                    📊 Graphique Bar Chart
+                </div>
+                <div class="chart-action">
+                    <button class="chart-link-btn">
+                        <span>Gérer les commandes</span>
+                        <span class="material-icons">arrow_forward</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Graphique 3 -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <span class="material-icons">donut_large</span>
+                    <h3>Utilisateurs par Rôle</h3>
+                </div>
+                <div class="chart-subtitle">Répartition des utilisateurs</div>
+                <div class="chart-placeholder">
+                    🍩 Graphique Donut Chart
+                </div>
+                <div class="chart-action">
+                    <button class="chart-link-btn">
+                        <span>Gérer les utilisateurs</span>
+                        <span class="material-icons">arrow_forward</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Graphique 4 -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <span class="material-icons">star</span>
+                    <h3>Top 5 Produits</h3>
+                </div>
+                <div class="chart-subtitle">Produits les plus vendus</div>
+                <div class="chart-placeholder">
+                    ⭐ Graphique Horizontal Bar
+                </div>
+                <div class="chart-action">
+                    <button class="chart-link-btn">
+                        <span>Voir tous les produits</span>
+                        <span class="material-icons">arrow_forward</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Vendeur -->
+        <div class="section-title">
+            <h2>
+                <span class="material-icons">store</span>
+                Dashboard Vendeur
+                <span class="badge badge-seller">Vendeur</span>
+            </h2>
+        </div>
+
+        <div class="charts-grid">
+            <!-- Graphique 1 -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <span class="material-icons">show_chart</span>
+                    <h3>Évolution des Revenus</h3>
+                </div>
+                <div class="chart-subtitle">Revenus des 7 derniers jours</div>
+                <div class="chart-placeholder">
+                    📈 Graphique Line Chart
+                </div>
+                <div class="chart-action">
+                    <button class="chart-link-btn">
+                        <span>Voir mes revenus</span>
+                        <span class="material-icons">arrow_forward</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Graphique 2 -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <span class="material-icons">bar_chart</span>
+                    <h3>Mes Commandes</h3>
+                </div>
+                <div class="chart-subtitle">Répartition par statut</div>
+                <div class="chart-placeholder">
+                    📊 Graphique Bar Chart
+                </div>
+                <div class="chart-action">
+                    <button class="chart-link-btn">
+                        <span>Gérer mes commandes</span>
+                        <span class="material-icons">arrow_forward</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Graphique 3 -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <span class="material-icons">star</span>
+                    <h3>Mes Top 5 Produits</h3>
+                </div>
+                <div class="chart-subtitle">Produits les plus vendus</div>
+                <div class="chart-placeholder">
+                    ⭐ Graphique Horizontal Bar
+                </div>
+                <div class="chart-action">
+                    <button class="chart-link-btn">
+                        <span>Gérer mes produits</span>
+                        <span class="material-icons">arrow_forward</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Box -->
+        <div class="info-box">
+            <h4>
+                <span class="material-icons">info</span>
+                Effets Interactifs
+            </h4>
+            <ul class="info-list">
+                <li><strong>Survolez</strong> un bouton pour voir les animations</li>
+                <li>Le texte recule légèrement vers la gauche</li>
+                <li>La flèche avance vers la droite</li>
+                <li>Le fond devient vert clair</li>
+                <li>Transition fluide de 0.3 secondes</li>
+                <li>Effet de clic avec réduction de taille</li>
+                <li>Design responsive pour mobile</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

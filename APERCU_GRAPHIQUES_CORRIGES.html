@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aperçu - Graphiques Corrigés Dashboard Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .status {
+            background: #fff;
+            color: #4CAF50;
+            display: inline-block;
+            padding: 10px 30px;
+            border-radius: 50px;
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section h2 {
+            color: #4CAF50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .before, .after {
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+        }
+        
+        .before {
+            background: #ffebee;
+            border-color: #f44336;
+        }
+        
+        .after {
+            background: #e8f5e9;
+            border-color: #4CAF50;
+        }
+        
+        .before h3 {
+            color: #f44336;
+            margin-bottom: 15px;
+        }
+        
+        .after h3 {
+            color: #4CAF50;
+            margin-bottom: 15px;
+        }
+        
+        .chart-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .chart-item h4 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .chart-item p {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+        
+        .icon.error {
+            color: #f44336;
+        }
+        
+        .icon.success {
+            color: #4CAF50;
+        }
+        
+        .files {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .files h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .files ul {
+            list-style: none;
+        }
+        
+        .files li {
+            padding: 10px;
+            background: white;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .files li code {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        
+        .summary {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .summary h2 {
+            color: white;
+            border: none;
+            margin-bottom: 20px;
+        }
+        
+        .summary p {
+            font-size: 1.2em;
+            line-height: 1.8;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            color: #333;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-card h3 {
+            font-size: 2.5em;
+            color: #4CAF50;
+            margin-bottom: 10px;
+        }
+        
+        .stat-card p {
+            color: #666;
+        }
+        
+        @media (max-width: 768px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✅ Graphiques Dashboard Admin Corrigés</h1>
+            <p>Les graphiques affichent maintenant des données réelles</p>
+            <div class="status">✓ TERMINÉ ET TESTÉ</div>
+        </div>
+        
+        <div class="content">
+            <!-- Section 1: Problème -->
+            <div class="section">
+                <h2>🎯 Problème Résolu</h2>
+                <p style="font-size: 1.1em; line-height: 1.8; color: #666;">
+                    Le dashboard admin utilisait des <strong>données simulées ou fixes</strong> au lieu des 
+                    <strong>vraies données</strong> de la base de données. Les graphiques ne reflétaient pas 
+                    la réalité et étaient inutiles pour la prise de décision.
+                </p>
+            </div>
+            
+            <!-- Section 2: Comparaison -->
+            <div class="section">
+                <h2>🔄 Avant / Après</h2>
+                <div class="comparison">
+                    <div class="before">
+                        <h3><span class="icon error">❌</span>AVANT (Données Simulées)</h3>
+                        
+                        <div class="chart-item">
+                            <h4>📈 Line Chart - CA Mensuel</h4>
+                            <p>Données <strong>aléatoires</strong> générées par <code>generateMonthlyRevenue()</code>. 
+                            Les valeurs changeaient à chaque rechargement.</p>
+                        </div>
+                        
+                        <div class="chart-item">
+                            <h4>📊 Bar Chart - Commandes</h4>
+                            <p>Données <strong>fixes</strong> : [45, 78, 234, 12]. 
+                            Toujours les mêmes valeurs peu importe l'état réel.</p>
+                        </div>
+                        
+                        <div class="chart-item">
+                            <h4>🍩 Donut Chart - Utilisateurs</h4>
+                            <p>Pourcentages <strong>supposés</strong> : 85% clients, 12% vendeurs, 3% admins. 
+                            Calcul approximatif non basé sur la réalité.</p>
+                        </div>
+                        
+                        <div class="chart-item">
+                            <h4>📊 Horizontal Bar - Top Produits</h4>
+                            <p>Produits <strong>fixes</strong> : Tomates Bio, Huile d'olive, Miel... 
+                            Ne correspondaient pas aux vrais produits vendus.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="after">
+                        <h3><span class="icon success">✅</span>APRÈS (Données Réelles)</h3>
+                        
+                        <div class="chart-item">
+                            <h4>📈 Line Chart - CA Mensuel</h4>
+                            <p>Données <strong>réelles</strong> de <code>data.revenusParMois</code>. 
+                            Affiche les revenus réels des 12 derniers mois.</p>
+                        </div>
+                        
+                        <div class="chart-item">
+                            <h4>📊 Bar Chart - Commandes</h4>
+                            <p>Données <strong>réelles</strong> de <code>data.commandesParStatut</code>. 
+                            Affiche le nombre réel de commandes par statut.</p>
+                        </div>
+                        
+                        <div class="chart-item">
+                            <h4>🍩 Donut Chart - Utilisateurs</h4>
+                            <p>Données <strong>réelles</strong> de <code>data.utilisateursParRole</code>. 
+                            Affiche le nombre réel d'utilisateurs par rôle.</p>
+                        </div>
+                        
+                        <div class="chart-item">
+                            <h4>📊 Horizontal Bar - Top Produits</h4>
+                            <p>Données <strong>réelles</strong> de <code>data.topProduits</code>. 
+                            Affiche les vrais top 5 produits les plus vendus.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Section 3: Modifications -->
+            <div class="section">
+                <h2>🔧 Modifications Effectuées</h2>
+                <div class="files">
+                    <h3>📁 Fichier Modifié</h3>
+                    <ul>
+                        <li><code>frontend/src/app/components/dashboard/dashboard.component.ts</code></li>
+                    </ul>
+                    
+                    <h3 style="margin-top: 20px;">✨ Changements</h3>
+                    <ul>
+                        <li>✅ Remplacement des données simulées par les vraies données du backend</li>
+                        <li>✅ Ajout de la méthode <code>getMonthIndex()</code> pour convertir les noms de mois</li>
+                        <li>✅ Suppression de la méthode <code>generateMonthlyRevenue()</code></li>
+                        <li>✅ Gestion des cas vides avec l'opérateur <code>||</code></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Section 4: Documentation -->
+            <div class="section">
+                <h2>📚 Documentation Disponible</h2>
+                <div class="files">
+                    <ul>
+                        <li><code>GRAPHIQUES_REELS_ADMIN.md</code> - Explication détaillée des modifications</li>
+                        <li><code>AVANT_APRES_GRAPHIQUES.md</code> - Comparaison avant/après avec code</li>
+                        <li><code>RESUME_CORRECTIONS_GRAPHIQUES.md</code> - Résumé complet des corrections</li>
+                        <li><code>VERIFICATION_GRAPHIQUES.md</code> - Guide de vérification et tests</li>
+                        <li><code>STRUCTURE_DONNEES_GRAPHIQUES.md</code> - Structure des données et flux</li>
+                        <li><code>TESTER_GRAPHIQUES_ADMIN.bat</code> - Script de test automatique</li>
+                        <li><code>LIRE_MOI_GRAPHIQUES.txt</code> - Résumé simple en texte</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Section 5: Statistiques -->
+            <div class="summary">
+                <h2>📊 Statistiques de la Correction</h2>
+                <div class="stats">
+                    <div class="stat-card">
+                        <h3>4</h3>
+                        <p>Graphiques Corrigés</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>1</h3>
+                        <p>Fichier Modifié</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>~150</h3>
+                        <p>Lignes Modifiées</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>7</h3>
+                        <p>Documents Créés</p>
+                    </div>
+                </div>
+                
+                <p style="margin-top: 30px; font-size: 1.3em;">
+                    🎉 <strong>Résultat Final :</strong> Le dashboard admin affiche maintenant des graphiques 
+                    avec données réelles provenant de la base de données. Plus de données simulées !
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

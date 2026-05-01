@@ -35,6 +35,9 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 
+// ng2-charts
+import { NgChartsModule } from 'ng2-charts';
+
 // Components
 import { AppComponent } from './app.component';
 import { LayoutComponent } from './components/layout/layout.component';
@@ -123,6 +126,7 @@ const routes: Routes = [
     MatBadgeModule, MatTooltipModule, MatStepperModule, MatChipsModule,
     MatMenuModule, MatRadioModule, MatSlideToggleModule, MatDividerModule,
     MatExpansionModule, MatCheckboxModule, MatDatepickerModule, MatNativeDateModule,
+    NgChartsModule,
   ],
   providers: [
     AuthGuard,

@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aperçu - Améliorations CSS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .status {
+            background: #fff;
+            color: #4CAF50;
+            display: inline-block;
+            padding: 10px 30px;
+            border-radius: 50px;
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section h2 {
+            color: #4CAF50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .comparison-card {
+            background: #f5f5f5;
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid #ddd;
+        }
+        
+        .comparison-card.before {
+            border-color: #f44336;
+        }
+        
+        .comparison-card.after {
+            border-color: #4CAF50;
+        }
+        
+        .comparison-card h3 {
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        
+        .comparison-card.before h3 {
+            color: #f44336;
+        }
+        
+        .comparison-card.after h3 {
+            color: #4CAF50;
+        }
+        
+        .feature-list {
+            list-style: none;
+        }
+        
+        .feature-list li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+        
+        .feature-list li:before {
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        .comparison-card.before .feature-list li:before {
+            content: "❌";
+        }
+        
+        .comparison-card.after .feature-list li:before {
+            content: "✅";
+        }
+        
+        .files-modified {
+            background: #f5f5f5;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 30px;
+        }
+        
+        .files-modified h3 {
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+        
+        .files-modified ul {
+            list-style: none;
+        }
+        
+        .files-modified li {
+            padding: 15px;
+            background: white;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #4CAF50;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        
+        .variables-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .variable-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #4CAF50;
+        }
+        
+        .variable-card h4 {
+            color: #4CAF50;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+        
+        .variable-item {
+            padding: 8px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .animations-demo {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .animation-box {
+            background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .animation-box:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 8px 24px rgba(76, 175, 80, 0.4);
+        }
+        
+        .animation-box.fadeIn {
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .animation-box.slideUp {
+            animation: slideUp 0.5s ease;
+        }
+        
+        .animation-box.scaleIn {
+            animation: scaleIn 0.5s ease;
+        }
+        
+        .animation-box.pulse {
+            animation: pulse 1s ease infinite;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .summary {
+            background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .summary h2 {
+            color: white;
+            border: none;
+            margin-bottom: 20px;
+        }
+        
+        .summary p {
+            font-size: 1.2em;
+            line-height: 1.8;
+        }
+        
+        @media (max-width: 768px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 Améliorations CSS</h1>
+            <p>Style Harmonieux pour Catégories et Coupons</p>
+            <div class="status">✓ TERMINÉ</div>
+        </div>
+        
+        <div class="content">
+            <!-- Section 1: Objectif -->
+            <div class="section">
+                <h2>🎯 Objectif</h2>
+                <p style="font-size: 1.1em; line-height: 1.8; color: #666;">
+                    Améliorer le style CSS des pages <strong>Catégories</strong> et <strong>Coupons</strong> 
+                    pour qu'ils soient plus harmonieux avec le reste de l'application et alignés avec la 
+                    <strong>charte graphique</strong>.
+                </p>
+            </div>
+            
+            <!-- Section 2: Comparaison -->
+            <div class="section">
+                <h2>🔄 Avant / Après</h2>
+                
+                <h3 style="margin-top: 30px; color: #666;">Page Coupons</h3>
+                <div class="comparison-grid">
+                    <div class="comparison-card before">
+                        <h3>❌ AVANT</h3>
+                        <ul class="feature-list">
+                            <li>Couleurs fixes (#f5576c, etc.)</li>
+                            <li>Ombres basiques</li>
+                            <li>Animations simples</li>
+                            <li>Hover -4px</li>
+                            <li>Badges plats</li>
+                            <li>Boutons basiques</li>
+                            <li>Modal simple</li>
+                            <li>Responsive 768px</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="comparison-card after">
+                        <h3>✅ APRÈS</h3>
+                        <ul class="feature-list">
+                            <li>Variables CSS (charte)</li>
+                            <li>Système d'ombres cohérent</li>
+                            <li>Animations multiples</li>
+                            <li>Hover -6px avec ombres dynamiques</li>
+                            <li>Badges 3D avec ombres</li>
+                            <li>Boutons majuscules avec effets</li>
+                            <li>Modal avec backdrop blur</li>
+                            <li>Responsive 1024px, 768px, 480px</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <h3 style="margin-top: 30px; color: #666;">Page Catégories</h3>
+                <div class="comparison-grid">
+                    <div class="comparison-card before">
+                        <h3>❌ AVANT</h3>
+                        <ul class="feature-list">
+                            <li>Couleurs fixes (#27ae60, #3498db)</li>
+                            <li>Gradients simples</li>
+                            <li>Tableau basique</li>
+                            <li>Badges simples</li>
+                            <li>Boutons variables</li>
+                            <li>État vide simple</li>
+                            <li>Responsive 768px</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="comparison-card after">
+                        <h3>✅ APRÈS</h3>
+                        <ul class="feature-list">
+                            <li>Variables CSS (charte)</li>
+                            <li>Gradients avec effets radiaux animés</li>
+                            <li>Tableau avec animations et hover amélioré</li>
+                            <li>Badges majuscules avec icônes</li>
+                            <li>Boutons taille fixe avec effets</li>
+                            <li>État vide avec icône dans cercle</li>
+                            <li>Responsive 1024px, 768px, 480px</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Section 3: Fichiers Modifiés -->
+            <div class="section">
+                <h2>📁 Fichiers Modifiés</h2>
+                <div class="files-modified">
+                    <h3>2 Fichiers CSS/SCSS</h3>
+                    <ul>
+                        <li>frontend/src/app/components/seller-coupons/seller-coupons.component.css</li>
+                        <li>frontend/src/app/components/manage-categories/manage-categories.component.scss</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Section 4: Variables CSS -->
+            <div class="section">
+                <h2>🎨 Variables CSS Utilisées</h2>
+                <div class="variables-grid">
+                    <div class="variable-card">
+                        <h4>Couleurs</h4>
+                        <div class="variable-item">--color-primary: #4CAF50</div>
+                        <div class="variable-item">--color-primary-dark: #388E3C</div>
+                        <div class="variable-item">--color-info: #2196F3</div>
+                        <div class="variable-item">--color-warning: #FF9800</div>
+                        <div class="variable-item">--color-error: #F44336</div>
+                    </div>
+                    
+                    <div class="variable-card">
+                        <h4>Espacements (8px)</h4>
+                        <div class="variable-item">--spacing-xs: 4px</div>
+                        <div class="variable-item">--spacing-sm: 8px</div>
+                        <div class="variable-item">--spacing-md: 16px</div>
+                        <div class="variable-item">--spacing-lg: 24px</div>
+                        <div class="variable-item">--spacing-xl: 32px</div>
+                    </div>
+                    
+                    <div class="variable-card">
+                        <h4>Ombres</h4>
+                        <div class="variable-item">--shadow-sm</div>
+                        <div class="variable-item">--shadow-md</div>
+                        <div class="variable-item">--shadow-lg</div>
+                        <div class="variable-item">--shadow-xl</div>
+                    </div>
+                    
+                    <div class="variable-card">
+                        <h4>Border Radius</h4>
+                        <div class="variable-item">--radius-sm: 6px</div>
+                        <div class="variable-item">--radius-md: 8px</div>
+                        <div class="variable-item">--radius-lg: 12px</div>
+                        <div class="variable-item">--radius-xl: 16px</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Section 5: Animations -->
+            <div class="section">
+                <h2>🎬 Animations Ajoutées</h2>
+                <p style="margin-bottom: 20px; color: #666;">Survolez les boîtes pour voir les effets</p>
+                <div class="animations-demo">
+                    <div class="animation-box fadeIn">fadeIn<br>Chargement</div>
+                    <div class="animation-box slideUp">slideUp<br>Grilles</div>
+                    <div class="animation-box scaleIn">scaleIn<br>Modals</div>
+                    <div class="animation-box pulse">pulse<br>Effets de fond</div>
+                </div>
+            </div>
+            
+            <!-- Section 6: Résumé -->
+            <div class="summary">
+                <h2>🎉 Résultat Final</h2>
+                <p>
+                    Les pages <strong>Coupons</strong> et <strong>Catégories</strong> ont maintenant un style 
+                    moderne, cohérent et harmonieux avec le reste de l'application.<br><br>
+                    
+                    <strong>Caractéristiques clés :</strong><br>
+                    ✓ Design moderne et épuré<br>
+                    ✓ Animations fluides et agréables<br>
+                    ✓ Cohérence avec la charte graphique<br>
+                    ✓ Responsive design optimisé<br>
+                    ✓ Accessibilité respectée<br>
+                    ✓ Performance optimale
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

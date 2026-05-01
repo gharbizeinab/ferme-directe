@@ -1,0 +1,68 @@
+================================================================================
+  CORRECTION DES GRAPHIQUES ADMIN - FERME DIRECTE
+================================================================================
+
+PROBLEME RESOLU :
+  Les graphiques du dashboard admin utilisaient des donnees simulees.
+  Maintenant, ils affichent les VRAIES DONNEES de la base de donnees.
+
+================================================================================
+
+FICHIER MODIFIE :
+  frontend/src/app/components/dashboard/dashboard.component.ts
+
+MODIFICATIONS :
+  1. Line Chart (CA mensuel)     : Donnees reelles au lieu d'aleatoires
+  2. Bar Chart (Commandes)       : Donnees reelles au lieu de fixes
+  3. Donut Chart (Utilisateurs)  : Donnees reelles au lieu d'approximatives
+  4. Horizontal Bar (Produits)   : Donnees reelles au lieu de fixes
+
+================================================================================
+
+COMMENT TESTER :
+
+  1. Demarrer le backend :
+     cd backend
+     mvn spring-boot:run
+
+  2. Demarrer le frontend :
+     cd frontend
+     npm start
+
+  3. Se connecter en admin et aller sur /admin/dashboard
+
+  4. Verifier que les 4 graphiques affichent des donnees reelles
+
+================================================================================
+
+DOCUMENTS DISPONIBLES :
+
+  GRAPHIQUES_REELS_ADMIN.md       - Explication detaillee des modifications
+  AVANT_APRES_GRAPHIQUES.md       - Comparaison avant/apres avec code
+  RESUME_CORRECTIONS_GRAPHIQUES.md - Resume complet des corrections
+  VERIFICATION_GRAPHIQUES.md      - Guide de verification et tests
+  TESTER_GRAPHIQUES_ADMIN.bat     - Script de test automatique
+
+================================================================================
+
+RESULTAT :
+
+  AVANT :
+    - Line Chart : donnees aleatoires (changeaient a chaque rechargement)
+    - Bar Chart : donnees fixes (45, 78, 234, 12)
+    - Donut Chart : pourcentages supposes (85%, 12%, 3%)
+    - Horizontal Bar : produits fixes (Tomates, Huile, Miel...)
+
+  APRES :
+    - Line Chart : revenus reels des 12 derniers mois
+    - Bar Chart : nombre reel de commandes par statut
+    - Donut Chart : nombre reel d'utilisateurs par role
+    - Horizontal Bar : top 5 produits reellement vendus
+
+================================================================================
+
+STATUT : TERMINE ET TESTE
+
+  Le dashboard admin affiche maintenant des graphiques avec donnees reelles !
+
+================================================================================

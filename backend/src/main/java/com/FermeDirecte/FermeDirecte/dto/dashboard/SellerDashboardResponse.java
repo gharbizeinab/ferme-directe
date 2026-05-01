@@ -18,4 +18,5 @@ public class SellerDashboardResponse {
     private List<Map<String, Object>> commandesRecentes;
     private List<Map<String, Object>> revenusParJour;
     private Map<String, Object> statistiquesCommandes;
+    private List<Map<String, Object>> topProduits;  // Top 5 produits du vendeur
 }

@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aperçu Charte Graphique - Ferme Directe</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        /* Variables CSS de la Charte */
+        :root {
+            --color-primary: #4CAF50;
+            --color-primary-dark: #388E3C;
+            --color-primary-light: #81C784;
+            --color-primary-bg: #E8F5E9;
+            
+            --color-secondary: #8D6E63;
+            --color-accent: #FFC107;
+            
+            --color-success: #4CAF50;
+            --color-error: #F44336;
+            --color-warning: #FF9800;
+            --color-info: #2196F3;
+            
+            --color-text-primary: #212121;
+            --color-text-secondary: #757575;
+            --color-surface: #FFFFFF;
+            --color-background: #F5F5F5;
+            --color-border: #E0E0E0;
+            
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+            --transition-base: 0.3s ease;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: var(--color-background);
+            color: var(--color-text-primary);
+            padding: 20px;
+            line-height: 1.5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        h1 .material-icons {
+            color: var(--color-primary);
+            font-size: 32px;
+        }
+        
+        .subtitle {
+            color: var(--color-text-secondary);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .section {
+            background: var(--color-surface);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+            box-shadow: var(--shadow-md);
+        }
+        
+        h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: var(--spacing-md);
+            color: var(--color-text-primary);
+        }
+        
+        /* Palette de couleurs */
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: var(--spacing-md);
+        }
+        
+        .color-box {
+            text-align: center;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .color-sample {
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .color-info {
+            padding: 12px;
+            background: white;
+            font-size: 12px;
+        }
+        
+        .color-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .color-code {
+            color: var(--color-text-secondary);
+            font-family: monospace;
+        }
+        
+        /* Boutons */
+        .button-grid {
+            display: flex;
+            gap: var(--spacing-md);
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background-color: var(--color-primary);
+            color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--color-primary-dark);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--color-primary);
+            border: 2px solid var(--color-primary);
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--color-primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        /* Cartes produits */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: var(--spacing-lg);
+        }
+        
+        .product-card {
+            background: var(--color-surface);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            transition: all var(--transition-base);
+            cursor: pointer;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .product-card__image-wrap {
+            position: relative;
+            height: 200px;
+            background: var(--color-primary-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .product-card__image-wrap .material-icons {
+            font-size: 64px;
+            color: var(--color-primary-light);
+            opacity: 0.5;
+        }
+        
+        .product-card__badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .product-card__badge--promo {
+            background-color: var(--color-error);
+            color: white;
+        }
+        
+        .product-card__content {
+            padding: var(--spacing-md);
+        }
+        
+        .product-card__category {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--color-primary);
+            margin-bottom: 8px;
+        }
+        
+        .product-card__title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .product-card__price {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--color-primary-dark);
+        }
+        
+        /* Badges */
+        .badge-grid {
+            display: flex;
+            gap: var(--spacing-md);
+            flex-wrap: wrap;
+        }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .badge-success {
+            background-color: #E8F5E9;
+            color: #2E7D32;
+        }
+        
+        .badge-warning {
+            background-color: #FFF3E0;
+            color: #E65100;
+        }
+        
+        .badge-error {
+            background-color: #FFEBEE;
+            color: #C62828;
+        }
+        
+        .badge-info {
+            background-color: #E3F2FD;
+            color: #1565C0;
+        }
+        
+        /* Typographie */
+        .typo-sample {
+            margin-bottom: var(--spacing-md);
+            padding: var(--spacing-md);
+            background: var(--color-background);
+            border-radius: var(--radius-md);
+        }
+        
+        .typo-label {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            margin-bottom: 4px;
+        }
+        
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-lg);
+        }
+        
+        .comparison-box {
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-lg);
+            text-align: center;
+        }
+        
+        .old-style {
+            background: #f0f0f0;
+            border: 2px solid #ccc;
+        }
+        
+        .new-style {
+            background: var(--color-primary-bg);
+            border: 2px solid var(--color-primary);
+        }
+        
+        .comparison-title {
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        
+        .old-color {
+            background: #388e3c;
+            color: white;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 12px 0;
+        }
+        
+        .new-color {
+            background: #4CAF50;
+            color: white;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin: 12px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>
+            <span class="material-icons">palette</span>
+            Aperçu Charte Graphique - Ferme Directe
+        </h1>
+        <p class="subtitle">Visualisation des nouveaux styles appliqués au projet</p>
+        
+        <!-- Comparaison Avant/Après -->
+        <div class="section">
+            <h2>🎨 Comparaison Avant / Après</h2>
+            <div class="comparison">
+                <div class="comparison-box old-style">
+                    <div class="comparison-title">❌ AVANT</div>
+                    <div class="old-color">#388e3c<br>Vert foncé</div>
+                    <p>Police: Nunito</p>
+                </div>
+                <div class="comparison-box new-style">
+                    <div class="comparison-title">✅ APRÈS</div>
+                    <div class="new-color">#4CAF50<br>Vert lumineux</div>
+                    <p>Police: Roboto</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Palette de couleurs -->
+        <div class="section">
+            <h2>🎨 Palette de Couleurs</h2>
+            <div class="color-grid">
+                <div class="color-box">
+                    <div class="color-sample" style="background: #4CAF50;">Primaire</div>
+                    <div class="color-info">
+                        <div class="color-name">Primary</div>
+                        <div class="color-code">#4CAF50</div>
+                    </div>
+                </div>
+                <div class="color-box">
+                    <div class="color-sample" style="background: #388E3C;">Primaire Dark</div>
+                    <div class="color-info">
+                        <div class="color-name">Primary Dark</div>
+                        <div class="color-code">#388E3C</div>
+                    </div>
+                </div>
+                <div class="color-box">
+                    <div class="color-sample" style="background: #81C784;">Primaire Light</div>
+                    <div class="color-info">
+                        <div class="color-name">Primary Light</div>
+                        <div class="color-code">#81C784</div>
+                    </div>
+                </div>
+                <div class="color-box">
+                    <div class="color-sample" style="background: #8D6E63;">Secondaire</div>
+                    <div class="color-info">
+                        <div class="color-name">Secondary</div>
+                        <div class="color-code">#8D6E63</div>
+                    </div>
+                </div>
+                <div class="color-box">
+                    <div class="color-sample" style="background: #FFC107;">Accent</div>
+                    <div class="color-info">
+                        <div class="color-name">Accent</div>
+                        <div class="color-code">#FFC107</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Typographie -->
+        <div class="section">
+            <h2>📝 Typographie</h2>
+            <div class="typo-sample">
+                <div class="typo-label">H1 - 32px / 600</div>
+                <h1 style="margin: 0;">Titre Principal</h1>
+            </div>
+            <div class="typo-sample">
+                <div class="typo-label">H2 - 24px / 600</div>
+                <h2 style="margin: 0;">Titre Secondaire</h2>
+            </div>
+            <div class="typo-sample">
+                <div class="typo-label">Body - 14px / 400</div>
+                <p>Texte de corps standard avec la police Roboto pour une meilleure lisibilité.</p>
+            </div>
+        </div>
+        
+        <!-- Boutons -->
+        <div class="section">
+            <h2>🔘 Boutons</h2>
+            <div class="button-grid">
+                <button class="btn btn-primary">
+                    <span class="material-icons">add_shopping_cart</span>
+                    Bouton Primaire
+                </button>
+                <button class="btn btn-secondary">
+                    <span class="material-icons">favorite</span>
+                    Bouton Secondaire
+                </button>
+            </div>
+        </div>
+        
+        <!-- Badges -->
+        <div class="section">
+            <h2>🏷️ Badges</h2>
+            <div class="badge-grid">
+                <span class="status-badge badge-success">
+                    <span class="material-icons" style="font-size: 16px;">check_circle</span>
+                    Succès
+                </span>
+                <span class="status-badge badge-warning">
+                    <span class="material-icons" style="font-size: 16px;">warning</span>
+                    Attention
+                </span>
+                <span class="status-badge badge-error">
+                    <span class="material-icons" style="font-size: 16px;">error</span>
+                    Erreur
+                </span>
+                <span class="status-badge badge-info">
+                    <span class="material-icons" style="font-size: 16px;">info</span>
+                    Info
+                </span>
+            </div>
+        </div>
+        
+        <!-- Cartes Produits -->
+        <div class="section">
+            <h2>🛒 Cartes Produits (avec effet hover)</h2>
+            <p style="margin-bottom: 16px; color: var(--color-text-secondary);">
+                Passez la souris sur les cartes pour voir l'animation
+            </p>
+            <div class="products-grid">
+                <div class="product-card">
+                    <div class="product-card__image-wrap">
+                        <span class="material-icons">local_florist</span>
+                        <span class="product-card__badge product-card__badge--promo">Promo</span>
+                    </div>
+                    <div class="product-card__content">
+                        <div class="product-card__category">Légumes</div>
+                        <div class="product-card__title">Tomates Bio</div>
+                        <div class="product-card__price">3.50 DT</div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-card__image-wrap">
+                        <span class="material-icons">eco</span>
+                    </div>
+                    <div class="product-card__content">
+                        <div class="product-card__category">Fruits</div>
+                        <div class="product-card__title">Oranges Fraîches</div>
+                        <div class="product-card__price">2.80 DT</div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-card__image-wrap">
+                        <span class="material-icons">agriculture</span>
+                    </div>
+                    <div class="product-card__content">
+                        <div class="product-card__category">Produits Laitiers</div>
+                        <div class="product-card__title">Fromage de Chèvre</div>
+                        <div class="product-card__price">8.50 DT</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Instructions -->
+        <div class="section" style="background: var(--color-primary-bg); border: 2px solid var(--color-primary);">
+            <h2>📍 Pour Voir Ces Styles dans l'Application</h2>
+            <ol style="line-height: 2;">
+                <li>Lancez le backend : <code>cd backend && mvn spring-boot:run</code></li>
+                <li>Lancez le frontend : <code>cd frontend && npm start</code></li>
+                <li>Ouvrez : <code>http://localhost:4200/products</code></li>
+            </ol>
+            <p style="margin-top: 16px;">
+                <strong>Ou double-cliquez sur :</strong> <code>DEMARRAGE_RAPIDE.bat</code>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

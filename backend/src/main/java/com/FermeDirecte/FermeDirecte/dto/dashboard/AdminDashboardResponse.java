@@ -23,4 +23,9 @@ public class AdminDashboardResponse {
     private List<Map<String, Object>> topProduits;
     private List<Map<String, Object>> commandesRecentes;
     private List<Map<String, Object>> produitsRecents;  // Nouveaux produits
+    
+    // Données pour les graphiques
+    private List<Map<String, Object>> revenusParMois;  // Revenus mensuels (12 mois)
+    private Map<String, Long> commandesParStatut;      // Commandes par statut
+    private Map<String, Long> utilisateursParRole;     // Utilisateurs par rôle
 }
